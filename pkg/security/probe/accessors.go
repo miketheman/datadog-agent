@@ -8,6 +8,7 @@ import (
 	"reflect"
 	"unsafe"
 
+	"github.com/DataDog/datadog-agent/pkg/security/model"
 	"github.com/DataDog/datadog-agent/pkg/security/secl/eval"
 )
 
@@ -15,7 +16,7 @@ func (m *Model) GetIterator(field eval.Field) (eval.Iterator, error) {
 	switch field {
 
 	case "process.ancestors":
-		return &ProcessAncestorsIterator{}, nil
+		return &model.ProcessAncestorsIterator{}, nil
 
 	}
 
@@ -29,7 +30,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.StringEvaluator{
 			EvalFnc: func(ctx *eval.Context) string {
 
-				return (*Event)(ctx.Object).Chmod.ResolveBasename((*Event)(ctx.Object))
+				return (*Event)(ctx.Object).ResolveFileBasename(&(*Event)(ctx.Object).Chmod.FileEvent)
 
 			},
 			Field: field,
@@ -41,7 +42,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.StringEvaluator{
 			EvalFnc: func(ctx *eval.Context) string {
 
-				return (*Event)(ctx.Object).Chmod.ResolveContainerPath((*Event)(ctx.Object))
+				return (*Event)(ctx.Object).ResolveFileContainerPath(&(*Event)(ctx.Object).Chmod.FileEvent)
 
 			},
 			Field: field,
@@ -53,7 +54,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.StringEvaluator{
 			EvalFnc: func(ctx *eval.Context) string {
 
-				return (*Event)(ctx.Object).Chmod.ResolveInode((*Event)(ctx.Object))
+				return (*Event)(ctx.Object).ResolveFileInode(&(*Event)(ctx.Object).Chmod.FileEvent)
 
 			},
 			Field: field,
@@ -65,7 +66,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.IntEvaluator{
 			EvalFnc: func(ctx *eval.Context) int {
 
-				return int((*Event)(ctx.Object).Chmod.Inode)
+				return int((*Event)(ctx.Object).Chmod.FileEvent.FileFields.Inode)
 
 			},
 			Field: field,
@@ -89,7 +90,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.IntEvaluator{
 			EvalFnc: func(ctx *eval.Context) int {
 
-				return int((*Event)(ctx.Object).Chmod.OverlayNumLower)
+				return int((*Event)(ctx.Object).Chmod.FileEvent.FileFields.OverlayNumLower)
 
 			},
 			Field: field,
@@ -101,7 +102,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.IntEvaluator{
 			EvalFnc: func(ctx *eval.Context) int {
 
-				return int((*Event)(ctx.Object).Chmod.Retval)
+				return int((*Event)(ctx.Object).Chmod.SyscallEvent.Retval)
 
 			},
 			Field: field,
@@ -113,7 +114,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.StringEvaluator{
 			EvalFnc: func(ctx *eval.Context) string {
 
-				return (*Event)(ctx.Object).Chown.ResolveBasename((*Event)(ctx.Object))
+				return (*Event)(ctx.Object).ResolveFileBasename(&(*Event)(ctx.Object).Chown.FileEvent)
 
 			},
 			Field: field,
@@ -125,7 +126,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.StringEvaluator{
 			EvalFnc: func(ctx *eval.Context) string {
 
-				return (*Event)(ctx.Object).Chown.ResolveContainerPath((*Event)(ctx.Object))
+				return (*Event)(ctx.Object).ResolveFileContainerPath(&(*Event)(ctx.Object).Chown.FileEvent)
 
 			},
 			Field: field,
@@ -137,7 +138,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.StringEvaluator{
 			EvalFnc: func(ctx *eval.Context) string {
 
-				return (*Event)(ctx.Object).Chown.ResolveInode((*Event)(ctx.Object))
+				return (*Event)(ctx.Object).ResolveFileInode(&(*Event)(ctx.Object).Chown.FileEvent)
 
 			},
 			Field: field,
@@ -161,7 +162,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.IntEvaluator{
 			EvalFnc: func(ctx *eval.Context) int {
 
-				return int((*Event)(ctx.Object).Chown.Inode)
+				return int((*Event)(ctx.Object).Chown.FileEvent.FileFields.Inode)
 
 			},
 			Field: field,
@@ -173,7 +174,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.IntEvaluator{
 			EvalFnc: func(ctx *eval.Context) int {
 
-				return int((*Event)(ctx.Object).Chown.OverlayNumLower)
+				return int((*Event)(ctx.Object).Chown.FileEvent.FileFields.OverlayNumLower)
 
 			},
 			Field: field,
@@ -185,7 +186,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.IntEvaluator{
 			EvalFnc: func(ctx *eval.Context) int {
 
-				return int((*Event)(ctx.Object).Chown.Retval)
+				return int((*Event)(ctx.Object).Chown.SyscallEvent.Retval)
 
 			},
 			Field: field,
@@ -209,7 +210,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.StringEvaluator{
 			EvalFnc: func(ctx *eval.Context) string {
 
-				return (*Event)(ctx.Object).Container.ResolveContainerID((*Event)(ctx.Object))
+				return (*Event)(ctx.Object).ResolveContainerID(&(*Event)(ctx.Object).Container)
 
 			},
 			Field: field,
@@ -221,19 +222,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.StringEvaluator{
 			EvalFnc: func(ctx *eval.Context) string {
 
-				return (*Event)(ctx.Object).Exec.ResolveBasename((*Event)(ctx.Object))
-
-			},
-			Field: field,
-
-			Weight: eval.HandlerWeight,
-		}, nil
-
-	case "exec.comm":
-		return &eval.StringEvaluator{
-			EvalFnc: func(ctx *eval.Context) string {
-
-				return (*Event)(ctx.Object).Exec.ResolveComm((*Event)(ctx.Object))
+				return (*Event)(ctx.Object).ResolveExecBasename(&(*Event)(ctx.Object).Exec)
 
 			},
 			Field: field,
@@ -245,7 +234,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.StringEvaluator{
 			EvalFnc: func(ctx *eval.Context) string {
 
-				return (*Event)(ctx.Object).Exec.ResolveContainerPath((*Event)(ctx.Object))
+				return (*Event)(ctx.Object).ResolveExecContainerPath(&(*Event)(ctx.Object).Exec)
 
 			},
 			Field: field,
@@ -257,7 +246,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.IntEvaluator{
 			EvalFnc: func(ctx *eval.Context) int {
 
-				return int((*Event)(ctx.Object).Exec.ResolveCookie((*Event)(ctx.Object)))
+				return int((*Event)(ctx.Object).ResolveExecCookie(&(*Event)(ctx.Object).Exec))
 
 			},
 			Field: field,
@@ -269,7 +258,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.StringEvaluator{
 			EvalFnc: func(ctx *eval.Context) string {
 
-				return (*Event)(ctx.Object).Exec.ResolveInode((*Event)(ctx.Object))
+				return (*Event)(ctx.Object).ResolveExecInode(&(*Event)(ctx.Object).Exec)
 
 			},
 			Field: field,
@@ -281,7 +270,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.IntEvaluator{
 			EvalFnc: func(ctx *eval.Context) int {
 
-				return int((*Event)(ctx.Object).Exec.ResolveGID((*Event)(ctx.Object)))
+				return int((*Event)(ctx.Object).ResolveExecGID(&(*Event)(ctx.Object).Exec))
 
 			},
 			Field: field,
@@ -293,7 +282,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.StringEvaluator{
 			EvalFnc: func(ctx *eval.Context) string {
 
-				return (*Event)(ctx.Object).Exec.ResolveGroup((*Event)(ctx.Object))
+				return (*Event)(ctx.Object).ResolveExecGroup(&(*Event)(ctx.Object).Exec)
 
 			},
 			Field: field,
@@ -305,7 +294,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.IntEvaluator{
 			EvalFnc: func(ctx *eval.Context) int {
 
-				return int((*Event)(ctx.Object).Exec.Inode)
+				return int((*Event)(ctx.Object).Exec.FileFields.Inode)
 
 			},
 			Field: field,
@@ -317,7 +306,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.StringEvaluator{
 			EvalFnc: func(ctx *eval.Context) string {
 
-				return (*Event)(ctx.Object).Exec.ResolveName((*Event)(ctx.Object))
+				return (*Event)(ctx.Object).ResolveExecBasename(&(*Event)(ctx.Object).Exec)
 
 			},
 			Field: field,
@@ -329,7 +318,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.IntEvaluator{
 			EvalFnc: func(ctx *eval.Context) int {
 
-				return int((*Event)(ctx.Object).Exec.OverlayNumLower)
+				return int((*Event)(ctx.Object).Exec.FileFields.OverlayNumLower)
 
 			},
 			Field: field,
@@ -341,7 +330,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.IntEvaluator{
 			EvalFnc: func(ctx *eval.Context) int {
 
-				return int((*Event)(ctx.Object).Exec.ResolvePPID((*Event)(ctx.Object)))
+				return int((*Event)(ctx.Object).ResolveExecPPID(&(*Event)(ctx.Object).Exec))
 
 			},
 			Field: field,
@@ -353,7 +342,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.StringEvaluator{
 			EvalFnc: func(ctx *eval.Context) string {
 
-				return (*Event)(ctx.Object).Exec.ResolveTTY((*Event)(ctx.Object))
+				return (*Event)(ctx.Object).ResolveExecTTY(&(*Event)(ctx.Object).Exec)
 
 			},
 			Field: field,
@@ -365,7 +354,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.IntEvaluator{
 			EvalFnc: func(ctx *eval.Context) int {
 
-				return int((*Event)(ctx.Object).Exec.ResolveUID((*Event)(ctx.Object)))
+				return int((*Event)(ctx.Object).ResolveExecUID(&(*Event)(ctx.Object).Exec))
 
 			},
 			Field: field,
@@ -377,7 +366,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.StringEvaluator{
 			EvalFnc: func(ctx *eval.Context) string {
 
-				return (*Event)(ctx.Object).Exec.ResolveUser((*Event)(ctx.Object))
+				return (*Event)(ctx.Object).ResolveExecUser(&(*Event)(ctx.Object).Exec)
 
 			},
 			Field: field,
@@ -389,7 +378,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.IntEvaluator{
 			EvalFnc: func(ctx *eval.Context) int {
 
-				return int((*Event)(ctx.Object).Link.Retval)
+				return int((*Event)(ctx.Object).Link.SyscallEvent.Retval)
 
 			},
 			Field: field,
@@ -401,7 +390,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.StringEvaluator{
 			EvalFnc: func(ctx *eval.Context) string {
 
-				return (*Event)(ctx.Object).Link.Source.ResolveBasename((*Event)(ctx.Object))
+				return (*Event)(ctx.Object).ResolveFileBasename(&(*Event)(ctx.Object).Link.Source)
 
 			},
 			Field: field,
@@ -413,7 +402,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.StringEvaluator{
 			EvalFnc: func(ctx *eval.Context) string {
 
-				return (*Event)(ctx.Object).Link.Source.ResolveContainerPath((*Event)(ctx.Object))
+				return (*Event)(ctx.Object).ResolveFileContainerPath(&(*Event)(ctx.Object).Link.Source)
 
 			},
 			Field: field,
@@ -425,7 +414,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.StringEvaluator{
 			EvalFnc: func(ctx *eval.Context) string {
 
-				return (*Event)(ctx.Object).Link.Source.ResolveInode((*Event)(ctx.Object))
+				return (*Event)(ctx.Object).ResolveFileInode(&(*Event)(ctx.Object).Link.Source)
 
 			},
 			Field: field,
@@ -437,7 +426,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.IntEvaluator{
 			EvalFnc: func(ctx *eval.Context) int {
 
-				return int((*Event)(ctx.Object).Link.Source.Inode)
+				return int((*Event)(ctx.Object).Link.Source.FileFields.Inode)
 
 			},
 			Field: field,
@@ -449,7 +438,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.IntEvaluator{
 			EvalFnc: func(ctx *eval.Context) int {
 
-				return int((*Event)(ctx.Object).Link.Source.OverlayNumLower)
+				return int((*Event)(ctx.Object).Link.Source.FileFields.OverlayNumLower)
 
 			},
 			Field: field,
@@ -461,7 +450,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.StringEvaluator{
 			EvalFnc: func(ctx *eval.Context) string {
 
-				return (*Event)(ctx.Object).Link.Target.ResolveBasename((*Event)(ctx.Object))
+				return (*Event)(ctx.Object).ResolveFileBasename(&(*Event)(ctx.Object).Link.Target)
 
 			},
 			Field: field,
@@ -473,7 +462,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.StringEvaluator{
 			EvalFnc: func(ctx *eval.Context) string {
 
-				return (*Event)(ctx.Object).Link.Target.ResolveContainerPath((*Event)(ctx.Object))
+				return (*Event)(ctx.Object).ResolveFileContainerPath(&(*Event)(ctx.Object).Link.Target)
 
 			},
 			Field: field,
@@ -485,7 +474,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.StringEvaluator{
 			EvalFnc: func(ctx *eval.Context) string {
 
-				return (*Event)(ctx.Object).Link.Target.ResolveInode((*Event)(ctx.Object))
+				return (*Event)(ctx.Object).ResolveFileInode(&(*Event)(ctx.Object).Link.Target)
 
 			},
 			Field: field,
@@ -497,7 +486,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.IntEvaluator{
 			EvalFnc: func(ctx *eval.Context) int {
 
-				return int((*Event)(ctx.Object).Link.Target.Inode)
+				return int((*Event)(ctx.Object).Link.Target.FileFields.Inode)
 
 			},
 			Field: field,
@@ -509,7 +498,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.IntEvaluator{
 			EvalFnc: func(ctx *eval.Context) int {
 
-				return int((*Event)(ctx.Object).Link.Target.OverlayNumLower)
+				return int((*Event)(ctx.Object).Link.Target.FileFields.OverlayNumLower)
 
 			},
 			Field: field,
@@ -521,7 +510,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.StringEvaluator{
 			EvalFnc: func(ctx *eval.Context) string {
 
-				return (*Event)(ctx.Object).Mkdir.ResolveBasename((*Event)(ctx.Object))
+				return (*Event)(ctx.Object).ResolveFileBasename(&(*Event)(ctx.Object).Mkdir.FileEvent)
 
 			},
 			Field: field,
@@ -533,7 +522,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.StringEvaluator{
 			EvalFnc: func(ctx *eval.Context) string {
 
-				return (*Event)(ctx.Object).Mkdir.ResolveContainerPath((*Event)(ctx.Object))
+				return (*Event)(ctx.Object).ResolveFileContainerPath(&(*Event)(ctx.Object).Mkdir.FileEvent)
 
 			},
 			Field: field,
@@ -545,7 +534,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.StringEvaluator{
 			EvalFnc: func(ctx *eval.Context) string {
 
-				return (*Event)(ctx.Object).Mkdir.ResolveInode((*Event)(ctx.Object))
+				return (*Event)(ctx.Object).ResolveFileInode(&(*Event)(ctx.Object).Mkdir.FileEvent)
 
 			},
 			Field: field,
@@ -557,7 +546,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.IntEvaluator{
 			EvalFnc: func(ctx *eval.Context) int {
 
-				return int((*Event)(ctx.Object).Mkdir.Inode)
+				return int((*Event)(ctx.Object).Mkdir.FileEvent.FileFields.Inode)
 
 			},
 			Field: field,
@@ -581,7 +570,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.IntEvaluator{
 			EvalFnc: func(ctx *eval.Context) int {
 
-				return int((*Event)(ctx.Object).Mkdir.OverlayNumLower)
+				return int((*Event)(ctx.Object).Mkdir.FileEvent.FileFields.OverlayNumLower)
 
 			},
 			Field: field,
@@ -593,7 +582,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.IntEvaluator{
 			EvalFnc: func(ctx *eval.Context) int {
 
-				return int((*Event)(ctx.Object).Mkdir.Retval)
+				return int((*Event)(ctx.Object).Mkdir.SyscallEvent.Retval)
 
 			},
 			Field: field,
@@ -605,7 +594,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.StringEvaluator{
 			EvalFnc: func(ctx *eval.Context) string {
 
-				return (*Event)(ctx.Object).Open.ResolveBasename((*Event)(ctx.Object))
+				return (*Event)(ctx.Object).ResolveFileBasename(&(*Event)(ctx.Object).Open.FileEvent)
 
 			},
 			Field: field,
@@ -617,7 +606,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.StringEvaluator{
 			EvalFnc: func(ctx *eval.Context) string {
 
-				return (*Event)(ctx.Object).Open.ResolveContainerPath((*Event)(ctx.Object))
+				return (*Event)(ctx.Object).ResolveFileContainerPath(&(*Event)(ctx.Object).Open.FileEvent)
 
 			},
 			Field: field,
@@ -629,7 +618,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.StringEvaluator{
 			EvalFnc: func(ctx *eval.Context) string {
 
-				return (*Event)(ctx.Object).Open.ResolveInode((*Event)(ctx.Object))
+				return (*Event)(ctx.Object).ResolveFileInode(&(*Event)(ctx.Object).Open.FileEvent)
 
 			},
 			Field: field,
@@ -653,7 +642,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.IntEvaluator{
 			EvalFnc: func(ctx *eval.Context) int {
 
-				return int((*Event)(ctx.Object).Open.Inode)
+				return int((*Event)(ctx.Object).Open.FileEvent.FileFields.Inode)
 
 			},
 			Field: field,
@@ -677,7 +666,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.IntEvaluator{
 			EvalFnc: func(ctx *eval.Context) int {
 
-				return int((*Event)(ctx.Object).Open.OverlayNumLower)
+				return int((*Event)(ctx.Object).Open.FileEvent.FileFields.OverlayNumLower)
 
 			},
 			Field: field,
@@ -689,7 +678,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.IntEvaluator{
 			EvalFnc: func(ctx *eval.Context) int {
 
-				return int((*Event)(ctx.Object).Open.Retval)
+				return int((*Event)(ctx.Object).Open.SyscallEvent.Retval)
 
 			},
 			Field: field,
@@ -705,31 +694,9 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 
 				reg := ctx.Registers[regID]
 				if reg.Value != nil {
-					element := (*ProcessCacheEntry)(reg.Value)
+					element := (*model.ProcessCacheEntry)(reg.Value)
 
-					result = element.ResolveBasename((*Event)(ctx.Object))
-
-				}
-
-				return result
-
-			},
-			Field: field,
-
-			Weight: eval.IteratorWeight,
-		}, nil
-
-	case "process.ancestors.comm":
-		return &eval.StringEvaluator{
-			EvalFnc: func(ctx *eval.Context) string {
-
-				var result string
-
-				reg := ctx.Registers[regID]
-				if reg.Value != nil {
-					element := (*ProcessCacheEntry)(reg.Value)
-
-					result = element.ResolveComm((*Event)(ctx.Object))
+					result = (*Event)(ctx.Object).ResolveExecBasename(&element.ExecEvent)
 
 				}
 
@@ -749,9 +716,9 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 
 				reg := ctx.Registers[regID]
 				if reg.Value != nil {
-					element := (*ProcessCacheEntry)(reg.Value)
+					element := (*model.ProcessCacheEntry)(reg.Value)
 
-					result = element.ResolveContainerPath((*Event)(ctx.Object))
+					result = (*Event)(ctx.Object).ResolveExecContainerPath(&element.ExecEvent)
 
 				}
 
@@ -771,9 +738,9 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 
 				reg := ctx.Registers[regID]
 				if reg.Value != nil {
-					element := (*ProcessCacheEntry)(reg.Value)
+					element := (*model.ProcessCacheEntry)(reg.Value)
 
-					result = int(element.ResolveCookie((*Event)(ctx.Object)))
+					result = int((*Event)(ctx.Object).ResolveExecCookie(&element.ExecEvent))
 
 				}
 
@@ -793,9 +760,9 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 
 				reg := ctx.Registers[regID]
 				if reg.Value != nil {
-					element := (*ProcessCacheEntry)(reg.Value)
+					element := (*model.ProcessCacheEntry)(reg.Value)
 
-					result = element.ResolveInode((*Event)(ctx.Object))
+					result = (*Event)(ctx.Object).ResolveExecInode(&element.ExecEvent)
 
 				}
 
@@ -815,9 +782,9 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 
 				reg := ctx.Registers[regID]
 				if reg.Value != nil {
-					element := (*ProcessCacheEntry)(reg.Value)
+					element := (*model.ProcessCacheEntry)(reg.Value)
 
-					result = int(element.GID)
+					result = int(element.ProcessContext.GID)
 
 				}
 
@@ -837,9 +804,9 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 
 				reg := ctx.Registers[regID]
 				if reg.Value != nil {
-					element := (*ProcessCacheEntry)(reg.Value)
+					element := (*model.ProcessCacheEntry)(reg.Value)
 
-					result = element.ResolveGroup((*Event)(ctx.Object))
+					result = (*Event)(ctx.Object).ResolveExecGroup(&element.ExecEvent)
 
 				}
 
@@ -859,9 +826,9 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 
 				reg := ctx.Registers[regID]
 				if reg.Value != nil {
-					element := (*ProcessCacheEntry)(reg.Value)
+					element := (*model.ProcessCacheEntry)(reg.Value)
 
-					result = element.ResolveContainerID((*Event)(ctx.Object))
+					result = (*Event)(ctx.Object).ResolveContainerID(&element.ContainerContext)
 
 				}
 
@@ -881,9 +848,9 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 
 				reg := ctx.Registers[regID]
 				if reg.Value != nil {
-					element := (*ProcessCacheEntry)(reg.Value)
+					element := (*model.ProcessCacheEntry)(reg.Value)
 
-					result = int(element.Inode)
+					result = int(element.ProcessContext.ExecEvent.FileFields.Inode)
 
 				}
 
@@ -903,9 +870,9 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 
 				reg := ctx.Registers[regID]
 				if reg.Value != nil {
-					element := (*ProcessCacheEntry)(reg.Value)
+					element := (*model.ProcessCacheEntry)(reg.Value)
 
-					result = element.ResolveName((*Event)(ctx.Object))
+					result = (*Event)(ctx.Object).ResolveExecBasename(&element.ExecEvent)
 
 				}
 
@@ -925,9 +892,9 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 
 				reg := ctx.Registers[regID]
 				if reg.Value != nil {
-					element := (*ProcessCacheEntry)(reg.Value)
+					element := (*model.ProcessCacheEntry)(reg.Value)
 
-					result = int(element.OverlayNumLower)
+					result = int(element.ProcessContext.ExecEvent.FileFields.OverlayNumLower)
 
 				}
 
@@ -947,9 +914,9 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 
 				reg := ctx.Registers[regID]
 				if reg.Value != nil {
-					element := (*ProcessCacheEntry)(reg.Value)
+					element := (*model.ProcessCacheEntry)(reg.Value)
 
-					result = int(element.Pid)
+					result = int(element.ProcessContext.Pid)
 
 				}
 
@@ -969,9 +936,9 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 
 				reg := ctx.Registers[regID]
 				if reg.Value != nil {
-					element := (*ProcessCacheEntry)(reg.Value)
+					element := (*model.ProcessCacheEntry)(reg.Value)
 
-					result = int(element.ResolvePPID((*Event)(ctx.Object)))
+					result = int((*Event)(ctx.Object).ResolveExecPPID(&element.ExecEvent))
 
 				}
 
@@ -991,9 +958,9 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 
 				reg := ctx.Registers[regID]
 				if reg.Value != nil {
-					element := (*ProcessCacheEntry)(reg.Value)
+					element := (*model.ProcessCacheEntry)(reg.Value)
 
-					result = int(element.Tid)
+					result = int(element.ProcessContext.Tid)
 
 				}
 
@@ -1013,9 +980,9 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 
 				reg := ctx.Registers[regID]
 				if reg.Value != nil {
-					element := (*ProcessCacheEntry)(reg.Value)
+					element := (*model.ProcessCacheEntry)(reg.Value)
 
-					result = element.ResolveTTY((*Event)(ctx.Object))
+					result = (*Event)(ctx.Object).ResolveExecTTY(&element.ExecEvent)
 
 				}
 
@@ -1035,9 +1002,9 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 
 				reg := ctx.Registers[regID]
 				if reg.Value != nil {
-					element := (*ProcessCacheEntry)(reg.Value)
+					element := (*model.ProcessCacheEntry)(reg.Value)
 
-					result = int(element.UID)
+					result = int(element.ProcessContext.UID)
 
 				}
 
@@ -1057,9 +1024,9 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 
 				reg := ctx.Registers[regID]
 				if reg.Value != nil {
-					element := (*ProcessCacheEntry)(reg.Value)
+					element := (*model.ProcessCacheEntry)(reg.Value)
 
-					result = element.ResolveUser((*Event)(ctx.Object))
+					result = (*Event)(ctx.Object).ResolveExecUser(&element.ExecEvent)
 
 				}
 
@@ -1075,19 +1042,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.StringEvaluator{
 			EvalFnc: func(ctx *eval.Context) string {
 
-				return (*Event)(ctx.Object).Process.ResolveBasename((*Event)(ctx.Object))
-
-			},
-			Field: field,
-
-			Weight: eval.HandlerWeight,
-		}, nil
-
-	case "process.comm":
-		return &eval.StringEvaluator{
-			EvalFnc: func(ctx *eval.Context) string {
-
-				return (*Event)(ctx.Object).Process.ResolveComm((*Event)(ctx.Object))
+				return (*Event)(ctx.Object).ResolveExecBasename(&(*Event)(ctx.Object).Process.ExecEvent)
 
 			},
 			Field: field,
@@ -1099,7 +1054,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.StringEvaluator{
 			EvalFnc: func(ctx *eval.Context) string {
 
-				return (*Event)(ctx.Object).Process.ResolveContainerPath((*Event)(ctx.Object))
+				return (*Event)(ctx.Object).ResolveExecContainerPath(&(*Event)(ctx.Object).Process.ExecEvent)
 
 			},
 			Field: field,
@@ -1111,7 +1066,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.IntEvaluator{
 			EvalFnc: func(ctx *eval.Context) int {
 
-				return int((*Event)(ctx.Object).Process.ResolveCookie((*Event)(ctx.Object)))
+				return int((*Event)(ctx.Object).ResolveExecCookie(&(*Event)(ctx.Object).Process.ExecEvent))
 
 			},
 			Field: field,
@@ -1123,7 +1078,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.StringEvaluator{
 			EvalFnc: func(ctx *eval.Context) string {
 
-				return (*Event)(ctx.Object).Process.ResolveInode((*Event)(ctx.Object))
+				return (*Event)(ctx.Object).ResolveExecInode(&(*Event)(ctx.Object).Process.ExecEvent)
 
 			},
 			Field: field,
@@ -1147,7 +1102,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.StringEvaluator{
 			EvalFnc: func(ctx *eval.Context) string {
 
-				return (*Event)(ctx.Object).Process.ResolveGroup((*Event)(ctx.Object))
+				return (*Event)(ctx.Object).ResolveExecGroup(&(*Event)(ctx.Object).Process.ExecEvent)
 
 			},
 			Field: field,
@@ -1159,7 +1114,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.IntEvaluator{
 			EvalFnc: func(ctx *eval.Context) int {
 
-				return int((*Event)(ctx.Object).Process.Inode)
+				return int((*Event)(ctx.Object).Process.ExecEvent.FileFields.Inode)
 
 			},
 			Field: field,
@@ -1171,7 +1126,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.StringEvaluator{
 			EvalFnc: func(ctx *eval.Context) string {
 
-				return (*Event)(ctx.Object).Process.ResolveName((*Event)(ctx.Object))
+				return (*Event)(ctx.Object).ResolveExecBasename(&(*Event)(ctx.Object).Process.ExecEvent)
 
 			},
 			Field: field,
@@ -1183,7 +1138,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.IntEvaluator{
 			EvalFnc: func(ctx *eval.Context) int {
 
-				return int((*Event)(ctx.Object).Process.OverlayNumLower)
+				return int((*Event)(ctx.Object).Process.ExecEvent.FileFields.OverlayNumLower)
 
 			},
 			Field: field,
@@ -1207,7 +1162,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.IntEvaluator{
 			EvalFnc: func(ctx *eval.Context) int {
 
-				return int((*Event)(ctx.Object).Process.ResolvePPID((*Event)(ctx.Object)))
+				return int((*Event)(ctx.Object).ResolveExecPPID(&(*Event)(ctx.Object).Process.ExecEvent))
 
 			},
 			Field: field,
@@ -1231,7 +1186,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.StringEvaluator{
 			EvalFnc: func(ctx *eval.Context) string {
 
-				return (*Event)(ctx.Object).Process.ResolveTTY((*Event)(ctx.Object))
+				return (*Event)(ctx.Object).ResolveExecTTY(&(*Event)(ctx.Object).Process.ExecEvent)
 
 			},
 			Field: field,
@@ -1255,7 +1210,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.StringEvaluator{
 			EvalFnc: func(ctx *eval.Context) string {
 
-				return (*Event)(ctx.Object).Process.ResolveUser((*Event)(ctx.Object))
+				return (*Event)(ctx.Object).ResolveExecUser(&(*Event)(ctx.Object).Process.ExecEvent)
 
 			},
 			Field: field,
@@ -1267,7 +1222,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.StringEvaluator{
 			EvalFnc: func(ctx *eval.Context) string {
 
-				return (*Event)(ctx.Object).RemoveXAttr.ResolveBasename((*Event)(ctx.Object))
+				return (*Event)(ctx.Object).ResolveFileBasename(&(*Event)(ctx.Object).RemoveXAttr.FileEvent)
 
 			},
 			Field: field,
@@ -1279,7 +1234,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.StringEvaluator{
 			EvalFnc: func(ctx *eval.Context) string {
 
-				return (*Event)(ctx.Object).RemoveXAttr.ResolveContainerPath((*Event)(ctx.Object))
+				return (*Event)(ctx.Object).ResolveFileContainerPath(&(*Event)(ctx.Object).RemoveXAttr.FileEvent)
 
 			},
 			Field: field,
@@ -1291,7 +1246,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.StringEvaluator{
 			EvalFnc: func(ctx *eval.Context) string {
 
-				return (*Event)(ctx.Object).RemoveXAttr.ResolveInode((*Event)(ctx.Object))
+				return (*Event)(ctx.Object).ResolveFileInode(&(*Event)(ctx.Object).RemoveXAttr.FileEvent)
 
 			},
 			Field: field,
@@ -1303,7 +1258,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.IntEvaluator{
 			EvalFnc: func(ctx *eval.Context) int {
 
-				return int((*Event)(ctx.Object).RemoveXAttr.Inode)
+				return int((*Event)(ctx.Object).RemoveXAttr.FileEvent.FileFields.Inode)
 
 			},
 			Field: field,
@@ -1315,7 +1270,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.StringEvaluator{
 			EvalFnc: func(ctx *eval.Context) string {
 
-				return (*Event)(ctx.Object).RemoveXAttr.GetName((*Event)(ctx.Object))
+				return (*Event)(ctx.Object).GetXAttrName(&(*Event)(ctx.Object).RemoveXAttr)
 
 			},
 			Field: field,
@@ -1327,7 +1282,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.StringEvaluator{
 			EvalFnc: func(ctx *eval.Context) string {
 
-				return (*Event)(ctx.Object).RemoveXAttr.GetNamespace((*Event)(ctx.Object))
+				return (*Event)(ctx.Object).GetXAttrNamespace(&(*Event)(ctx.Object).RemoveXAttr)
 
 			},
 			Field: field,
@@ -1339,7 +1294,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.IntEvaluator{
 			EvalFnc: func(ctx *eval.Context) int {
 
-				return int((*Event)(ctx.Object).RemoveXAttr.OverlayNumLower)
+				return int((*Event)(ctx.Object).RemoveXAttr.FileEvent.FileFields.OverlayNumLower)
 
 			},
 			Field: field,
@@ -1351,7 +1306,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.IntEvaluator{
 			EvalFnc: func(ctx *eval.Context) int {
 
-				return int((*Event)(ctx.Object).RemoveXAttr.Retval)
+				return int((*Event)(ctx.Object).RemoveXAttr.SyscallEvent.Retval)
 
 			},
 			Field: field,
@@ -1363,7 +1318,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.StringEvaluator{
 			EvalFnc: func(ctx *eval.Context) string {
 
-				return (*Event)(ctx.Object).Rename.New.ResolveBasename((*Event)(ctx.Object))
+				return (*Event)(ctx.Object).ResolveFileBasename(&(*Event)(ctx.Object).Rename.New)
 
 			},
 			Field: field,
@@ -1375,7 +1330,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.StringEvaluator{
 			EvalFnc: func(ctx *eval.Context) string {
 
-				return (*Event)(ctx.Object).Rename.New.ResolveContainerPath((*Event)(ctx.Object))
+				return (*Event)(ctx.Object).ResolveFileContainerPath(&(*Event)(ctx.Object).Rename.New)
 
 			},
 			Field: field,
@@ -1387,7 +1342,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.StringEvaluator{
 			EvalFnc: func(ctx *eval.Context) string {
 
-				return (*Event)(ctx.Object).Rename.New.ResolveInode((*Event)(ctx.Object))
+				return (*Event)(ctx.Object).ResolveFileInode(&(*Event)(ctx.Object).Rename.New)
 
 			},
 			Field: field,
@@ -1399,7 +1354,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.IntEvaluator{
 			EvalFnc: func(ctx *eval.Context) int {
 
-				return int((*Event)(ctx.Object).Rename.New.Inode)
+				return int((*Event)(ctx.Object).Rename.New.FileFields.Inode)
 
 			},
 			Field: field,
@@ -1411,7 +1366,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.IntEvaluator{
 			EvalFnc: func(ctx *eval.Context) int {
 
-				return int((*Event)(ctx.Object).Rename.New.OverlayNumLower)
+				return int((*Event)(ctx.Object).Rename.New.FileFields.OverlayNumLower)
 
 			},
 			Field: field,
@@ -1423,7 +1378,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.StringEvaluator{
 			EvalFnc: func(ctx *eval.Context) string {
 
-				return (*Event)(ctx.Object).Rename.Old.ResolveBasename((*Event)(ctx.Object))
+				return (*Event)(ctx.Object).ResolveFileBasename(&(*Event)(ctx.Object).Rename.Old)
 
 			},
 			Field: field,
@@ -1435,7 +1390,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.StringEvaluator{
 			EvalFnc: func(ctx *eval.Context) string {
 
-				return (*Event)(ctx.Object).Rename.Old.ResolveContainerPath((*Event)(ctx.Object))
+				return (*Event)(ctx.Object).ResolveFileContainerPath(&(*Event)(ctx.Object).Rename.Old)
 
 			},
 			Field: field,
@@ -1447,7 +1402,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.StringEvaluator{
 			EvalFnc: func(ctx *eval.Context) string {
 
-				return (*Event)(ctx.Object).Rename.Old.ResolveInode((*Event)(ctx.Object))
+				return (*Event)(ctx.Object).ResolveFileInode(&(*Event)(ctx.Object).Rename.Old)
 
 			},
 			Field: field,
@@ -1459,7 +1414,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.IntEvaluator{
 			EvalFnc: func(ctx *eval.Context) int {
 
-				return int((*Event)(ctx.Object).Rename.Old.Inode)
+				return int((*Event)(ctx.Object).Rename.Old.FileFields.Inode)
 
 			},
 			Field: field,
@@ -1471,7 +1426,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.IntEvaluator{
 			EvalFnc: func(ctx *eval.Context) int {
 
-				return int((*Event)(ctx.Object).Rename.Old.OverlayNumLower)
+				return int((*Event)(ctx.Object).Rename.Old.FileFields.OverlayNumLower)
 
 			},
 			Field: field,
@@ -1483,7 +1438,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.IntEvaluator{
 			EvalFnc: func(ctx *eval.Context) int {
 
-				return int((*Event)(ctx.Object).Rename.Retval)
+				return int((*Event)(ctx.Object).Rename.SyscallEvent.Retval)
 
 			},
 			Field: field,
@@ -1495,7 +1450,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.StringEvaluator{
 			EvalFnc: func(ctx *eval.Context) string {
 
-				return (*Event)(ctx.Object).Rmdir.ResolveBasename((*Event)(ctx.Object))
+				return (*Event)(ctx.Object).ResolveFileBasename(&(*Event)(ctx.Object).Rmdir.FileEvent)
 
 			},
 			Field: field,
@@ -1507,7 +1462,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.StringEvaluator{
 			EvalFnc: func(ctx *eval.Context) string {
 
-				return (*Event)(ctx.Object).Rmdir.ResolveContainerPath((*Event)(ctx.Object))
+				return (*Event)(ctx.Object).ResolveFileContainerPath(&(*Event)(ctx.Object).Rmdir.FileEvent)
 
 			},
 			Field: field,
@@ -1519,7 +1474,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.StringEvaluator{
 			EvalFnc: func(ctx *eval.Context) string {
 
-				return (*Event)(ctx.Object).Rmdir.ResolveInode((*Event)(ctx.Object))
+				return (*Event)(ctx.Object).ResolveFileInode(&(*Event)(ctx.Object).Rmdir.FileEvent)
 
 			},
 			Field: field,
@@ -1531,7 +1486,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.IntEvaluator{
 			EvalFnc: func(ctx *eval.Context) int {
 
-				return int((*Event)(ctx.Object).Rmdir.Inode)
+				return int((*Event)(ctx.Object).Rmdir.FileEvent.FileFields.Inode)
 
 			},
 			Field: field,
@@ -1543,7 +1498,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.IntEvaluator{
 			EvalFnc: func(ctx *eval.Context) int {
 
-				return int((*Event)(ctx.Object).Rmdir.OverlayNumLower)
+				return int((*Event)(ctx.Object).Rmdir.FileEvent.FileFields.OverlayNumLower)
 
 			},
 			Field: field,
@@ -1555,7 +1510,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.IntEvaluator{
 			EvalFnc: func(ctx *eval.Context) int {
 
-				return int((*Event)(ctx.Object).Rmdir.Retval)
+				return int((*Event)(ctx.Object).Rmdir.SyscallEvent.Retval)
 
 			},
 			Field: field,
@@ -1567,7 +1522,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.StringEvaluator{
 			EvalFnc: func(ctx *eval.Context) string {
 
-				return (*Event)(ctx.Object).SetXAttr.ResolveBasename((*Event)(ctx.Object))
+				return (*Event)(ctx.Object).ResolveFileBasename(&(*Event)(ctx.Object).SetXAttr.FileEvent)
 
 			},
 			Field: field,
@@ -1579,7 +1534,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.StringEvaluator{
 			EvalFnc: func(ctx *eval.Context) string {
 
-				return (*Event)(ctx.Object).SetXAttr.ResolveContainerPath((*Event)(ctx.Object))
+				return (*Event)(ctx.Object).ResolveFileContainerPath(&(*Event)(ctx.Object).SetXAttr.FileEvent)
 
 			},
 			Field: field,
@@ -1591,7 +1546,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.StringEvaluator{
 			EvalFnc: func(ctx *eval.Context) string {
 
-				return (*Event)(ctx.Object).SetXAttr.ResolveInode((*Event)(ctx.Object))
+				return (*Event)(ctx.Object).ResolveFileInode(&(*Event)(ctx.Object).SetXAttr.FileEvent)
 
 			},
 			Field: field,
@@ -1603,7 +1558,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.IntEvaluator{
 			EvalFnc: func(ctx *eval.Context) int {
 
-				return int((*Event)(ctx.Object).SetXAttr.Inode)
+				return int((*Event)(ctx.Object).SetXAttr.FileEvent.FileFields.Inode)
 
 			},
 			Field: field,
@@ -1615,7 +1570,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.StringEvaluator{
 			EvalFnc: func(ctx *eval.Context) string {
 
-				return (*Event)(ctx.Object).SetXAttr.GetName((*Event)(ctx.Object))
+				return (*Event)(ctx.Object).GetXAttrName(&(*Event)(ctx.Object).SetXAttr)
 
 			},
 			Field: field,
@@ -1627,7 +1582,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.StringEvaluator{
 			EvalFnc: func(ctx *eval.Context) string {
 
-				return (*Event)(ctx.Object).SetXAttr.GetNamespace((*Event)(ctx.Object))
+				return (*Event)(ctx.Object).GetXAttrNamespace(&(*Event)(ctx.Object).SetXAttr)
 
 			},
 			Field: field,
@@ -1639,7 +1594,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.IntEvaluator{
 			EvalFnc: func(ctx *eval.Context) int {
 
-				return int((*Event)(ctx.Object).SetXAttr.OverlayNumLower)
+				return int((*Event)(ctx.Object).SetXAttr.FileEvent.FileFields.OverlayNumLower)
 
 			},
 			Field: field,
@@ -1651,7 +1606,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.IntEvaluator{
 			EvalFnc: func(ctx *eval.Context) int {
 
-				return int((*Event)(ctx.Object).SetXAttr.Retval)
+				return int((*Event)(ctx.Object).SetXAttr.SyscallEvent.Retval)
 
 			},
 			Field: field,
@@ -1663,7 +1618,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.StringEvaluator{
 			EvalFnc: func(ctx *eval.Context) string {
 
-				return (*Event)(ctx.Object).Unlink.ResolveBasename((*Event)(ctx.Object))
+				return (*Event)(ctx.Object).ResolveFileBasename(&(*Event)(ctx.Object).Unlink.FileEvent)
 
 			},
 			Field: field,
@@ -1675,7 +1630,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.StringEvaluator{
 			EvalFnc: func(ctx *eval.Context) string {
 
-				return (*Event)(ctx.Object).Unlink.ResolveContainerPath((*Event)(ctx.Object))
+				return (*Event)(ctx.Object).ResolveFileContainerPath(&(*Event)(ctx.Object).Unlink.FileEvent)
 
 			},
 			Field: field,
@@ -1687,7 +1642,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.StringEvaluator{
 			EvalFnc: func(ctx *eval.Context) string {
 
-				return (*Event)(ctx.Object).Unlink.ResolveInode((*Event)(ctx.Object))
+				return (*Event)(ctx.Object).ResolveFileInode(&(*Event)(ctx.Object).Unlink.FileEvent)
 
 			},
 			Field: field,
@@ -1711,7 +1666,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.IntEvaluator{
 			EvalFnc: func(ctx *eval.Context) int {
 
-				return int((*Event)(ctx.Object).Unlink.Inode)
+				return int((*Event)(ctx.Object).Unlink.FileEvent.FileFields.Inode)
 
 			},
 			Field: field,
@@ -1723,7 +1678,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.IntEvaluator{
 			EvalFnc: func(ctx *eval.Context) int {
 
-				return int((*Event)(ctx.Object).Unlink.OverlayNumLower)
+				return int((*Event)(ctx.Object).Unlink.FileEvent.FileFields.OverlayNumLower)
 
 			},
 			Field: field,
@@ -1735,7 +1690,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.IntEvaluator{
 			EvalFnc: func(ctx *eval.Context) int {
 
-				return int((*Event)(ctx.Object).Unlink.Retval)
+				return int((*Event)(ctx.Object).Unlink.SyscallEvent.Retval)
 
 			},
 			Field: field,
@@ -1747,7 +1702,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.StringEvaluator{
 			EvalFnc: func(ctx *eval.Context) string {
 
-				return (*Event)(ctx.Object).Utimes.ResolveBasename((*Event)(ctx.Object))
+				return (*Event)(ctx.Object).ResolveFileBasename(&(*Event)(ctx.Object).Utimes.FileEvent)
 
 			},
 			Field: field,
@@ -1759,7 +1714,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.StringEvaluator{
 			EvalFnc: func(ctx *eval.Context) string {
 
-				return (*Event)(ctx.Object).Utimes.ResolveContainerPath((*Event)(ctx.Object))
+				return (*Event)(ctx.Object).ResolveFileContainerPath(&(*Event)(ctx.Object).Utimes.FileEvent)
 
 			},
 			Field: field,
@@ -1771,7 +1726,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.StringEvaluator{
 			EvalFnc: func(ctx *eval.Context) string {
 
-				return (*Event)(ctx.Object).Utimes.ResolveInode((*Event)(ctx.Object))
+				return (*Event)(ctx.Object).ResolveFileInode(&(*Event)(ctx.Object).Utimes.FileEvent)
 
 			},
 			Field: field,
@@ -1783,7 +1738,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.IntEvaluator{
 			EvalFnc: func(ctx *eval.Context) int {
 
-				return int((*Event)(ctx.Object).Utimes.Inode)
+				return int((*Event)(ctx.Object).Utimes.FileEvent.FileFields.Inode)
 
 			},
 			Field: field,
@@ -1795,7 +1750,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.IntEvaluator{
 			EvalFnc: func(ctx *eval.Context) int {
 
-				return int((*Event)(ctx.Object).Utimes.OverlayNumLower)
+				return int((*Event)(ctx.Object).Utimes.FileEvent.FileFields.OverlayNumLower)
 
 			},
 			Field: field,
@@ -1807,7 +1762,7 @@ func (m *Model) GetEvaluator(field eval.Field, regID eval.RegisterID) (eval.Eval
 		return &eval.IntEvaluator{
 			EvalFnc: func(ctx *eval.Context) int {
 
-				return int((*Event)(ctx.Object).Utimes.Retval)
+				return int((*Event)(ctx.Object).Utimes.SyscallEvent.Retval)
 
 			},
 			Field: field,
@@ -1825,19 +1780,19 @@ func (e *Event) GetFieldValue(field eval.Field) (interface{}, error) {
 
 	case "chmod.basename":
 
-		return e.Chmod.ResolveBasename(e), nil
+		return e.ResolveFileBasename(&e.Chmod.FileEvent), nil
 
 	case "chmod.container_path":
 
-		return e.Chmod.ResolveContainerPath(e), nil
+		return e.ResolveFileContainerPath(&e.Chmod.FileEvent), nil
 
 	case "chmod.filename":
 
-		return e.Chmod.ResolveInode(e), nil
+		return e.ResolveFileInode(&e.Chmod.FileEvent), nil
 
 	case "chmod.inode":
 
-		return int(e.Chmod.Inode), nil
+		return int(e.Chmod.FileEvent.FileFields.Inode), nil
 
 	case "chmod.mode":
 
@@ -1845,23 +1800,23 @@ func (e *Event) GetFieldValue(field eval.Field) (interface{}, error) {
 
 	case "chmod.overlay_numlower":
 
-		return int(e.Chmod.OverlayNumLower), nil
+		return int(e.Chmod.FileEvent.FileFields.OverlayNumLower), nil
 
 	case "chmod.retval":
 
-		return int(e.Chmod.Retval), nil
+		return int(e.Chmod.SyscallEvent.Retval), nil
 
 	case "chown.basename":
 
-		return e.Chown.ResolveBasename(e), nil
+		return e.ResolveFileBasename(&e.Chown.FileEvent), nil
 
 	case "chown.container_path":
 
-		return e.Chown.ResolveContainerPath(e), nil
+		return e.ResolveFileContainerPath(&e.Chown.FileEvent), nil
 
 	case "chown.filename":
 
-		return e.Chown.ResolveInode(e), nil
+		return e.ResolveFileInode(&e.Chown.FileEvent), nil
 
 	case "chown.gid":
 
@@ -1869,15 +1824,15 @@ func (e *Event) GetFieldValue(field eval.Field) (interface{}, error) {
 
 	case "chown.inode":
 
-		return int(e.Chown.Inode), nil
+		return int(e.Chown.FileEvent.FileFields.Inode), nil
 
 	case "chown.overlay_numlower":
 
-		return int(e.Chown.OverlayNumLower), nil
+		return int(e.Chown.FileEvent.FileFields.OverlayNumLower), nil
 
 	case "chown.retval":
 
-		return int(e.Chown.Retval), nil
+		return int(e.Chown.SyscallEvent.Retval), nil
 
 	case "chown.uid":
 
@@ -1885,123 +1840,119 @@ func (e *Event) GetFieldValue(field eval.Field) (interface{}, error) {
 
 	case "container.id":
 
-		return e.Container.ResolveContainerID(e), nil
+		return e.ResolveContainerID(&e.Container), nil
 
 	case "exec.basename":
 
-		return e.Exec.ResolveBasename(e), nil
-
-	case "exec.comm":
-
-		return e.Exec.ResolveComm(e), nil
+		return e.ResolveExecBasename(&e.Exec), nil
 
 	case "exec.container_path":
 
-		return e.Exec.ResolveContainerPath(e), nil
+		return e.ResolveExecContainerPath(&e.Exec), nil
 
 	case "exec.cookie":
 
-		return int(e.Exec.ResolveCookie(e)), nil
+		return int(e.ResolveExecCookie(&e.Exec)), nil
 
 	case "exec.filename":
 
-		return e.Exec.ResolveInode(e), nil
+		return e.ResolveExecInode(&e.Exec), nil
 
 	case "exec.gid":
 
-		return int(e.Exec.ResolveGID(e)), nil
+		return int(e.ResolveExecGID(&e.Exec)), nil
 
 	case "exec.group":
 
-		return e.Exec.ResolveGroup(e), nil
+		return e.ResolveExecGroup(&e.Exec), nil
 
 	case "exec.inode":
 
-		return int(e.Exec.Inode), nil
+		return int(e.Exec.FileFields.Inode), nil
 
 	case "exec.name":
 
-		return e.Exec.ResolveName(e), nil
+		return e.ResolveExecBasename(&e.Exec), nil
 
 	case "exec.overlay_numlower":
 
-		return int(e.Exec.OverlayNumLower), nil
+		return int(e.Exec.FileFields.OverlayNumLower), nil
 
 	case "exec.ppid":
 
-		return int(e.Exec.ResolvePPID(e)), nil
+		return int(e.ResolveExecPPID(&e.Exec)), nil
 
 	case "exec.tty_name":
 
-		return e.Exec.ResolveTTY(e), nil
+		return e.ResolveExecTTY(&e.Exec), nil
 
 	case "exec.uid":
 
-		return int(e.Exec.ResolveUID(e)), nil
+		return int(e.ResolveExecUID(&e.Exec)), nil
 
 	case "exec.user":
 
-		return e.Exec.ResolveUser(e), nil
+		return e.ResolveExecUser(&e.Exec), nil
 
 	case "link.retval":
 
-		return int(e.Link.Retval), nil
+		return int(e.Link.SyscallEvent.Retval), nil
 
 	case "link.source.basename":
 
-		return e.Link.Source.ResolveBasename(e), nil
+		return e.ResolveFileBasename(&e.Link.Source), nil
 
 	case "link.source.container_path":
 
-		return e.Link.Source.ResolveContainerPath(e), nil
+		return e.ResolveFileContainerPath(&e.Link.Source), nil
 
 	case "link.source.filename":
 
-		return e.Link.Source.ResolveInode(e), nil
+		return e.ResolveFileInode(&e.Link.Source), nil
 
 	case "link.source.inode":
 
-		return int(e.Link.Source.Inode), nil
+		return int(e.Link.Source.FileFields.Inode), nil
 
 	case "link.source.overlay_numlower":
 
-		return int(e.Link.Source.OverlayNumLower), nil
+		return int(e.Link.Source.FileFields.OverlayNumLower), nil
 
 	case "link.target.basename":
 
-		return e.Link.Target.ResolveBasename(e), nil
+		return e.ResolveFileBasename(&e.Link.Target), nil
 
 	case "link.target.container_path":
 
-		return e.Link.Target.ResolveContainerPath(e), nil
+		return e.ResolveFileContainerPath(&e.Link.Target), nil
 
 	case "link.target.filename":
 
-		return e.Link.Target.ResolveInode(e), nil
+		return e.ResolveFileInode(&e.Link.Target), nil
 
 	case "link.target.inode":
 
-		return int(e.Link.Target.Inode), nil
+		return int(e.Link.Target.FileFields.Inode), nil
 
 	case "link.target.overlay_numlower":
 
-		return int(e.Link.Target.OverlayNumLower), nil
+		return int(e.Link.Target.FileFields.OverlayNumLower), nil
 
 	case "mkdir.basename":
 
-		return e.Mkdir.ResolveBasename(e), nil
+		return e.ResolveFileBasename(&e.Mkdir.FileEvent), nil
 
 	case "mkdir.container_path":
 
-		return e.Mkdir.ResolveContainerPath(e), nil
+		return e.ResolveFileContainerPath(&e.Mkdir.FileEvent), nil
 
 	case "mkdir.filename":
 
-		return e.Mkdir.ResolveInode(e), nil
+		return e.ResolveFileInode(&e.Mkdir.FileEvent), nil
 
 	case "mkdir.inode":
 
-		return int(e.Mkdir.Inode), nil
+		return int(e.Mkdir.FileEvent.FileFields.Inode), nil
 
 	case "mkdir.mode":
 
@@ -2009,23 +1960,23 @@ func (e *Event) GetFieldValue(field eval.Field) (interface{}, error) {
 
 	case "mkdir.overlay_numlower":
 
-		return int(e.Mkdir.OverlayNumLower), nil
+		return int(e.Mkdir.FileEvent.FileFields.OverlayNumLower), nil
 
 	case "mkdir.retval":
 
-		return int(e.Mkdir.Retval), nil
+		return int(e.Mkdir.SyscallEvent.Retval), nil
 
 	case "open.basename":
 
-		return e.Open.ResolveBasename(e), nil
+		return e.ResolveFileBasename(&e.Open.FileEvent), nil
 
 	case "open.container_path":
 
-		return e.Open.ResolveContainerPath(e), nil
+		return e.ResolveFileContainerPath(&e.Open.FileEvent), nil
 
 	case "open.filename":
 
-		return e.Open.ResolveInode(e), nil
+		return e.ResolveFileInode(&e.Open.FileEvent), nil
 
 	case "open.flags":
 
@@ -2033,7 +1984,7 @@ func (e *Event) GetFieldValue(field eval.Field) (interface{}, error) {
 
 	case "open.inode":
 
-		return int(e.Open.Inode), nil
+		return int(e.Open.FileEvent.FileFields.Inode), nil
 
 	case "open.mode":
 
@@ -2041,11 +1992,11 @@ func (e *Event) GetFieldValue(field eval.Field) (interface{}, error) {
 
 	case "open.overlay_numlower":
 
-		return int(e.Open.OverlayNumLower), nil
+		return int(e.Open.FileEvent.FileFields.OverlayNumLower), nil
 
 	case "open.retval":
 
-		return int(e.Open.Retval), nil
+		return int(e.Open.SyscallEvent.Retval), nil
 
 	case "process.ancestors.basename":
 
@@ -2054,35 +2005,13 @@ func (e *Event) GetFieldValue(field eval.Field) (interface{}, error) {
 		ctx := &eval.Context{}
 		ctx.SetObject(unsafe.Pointer(e))
 
-		iterator := &ProcessAncestorsIterator{}
+		iterator := &model.ProcessAncestorsIterator{}
 		ptr := iterator.Front(ctx)
 
 		for ptr != nil {
-			element := (*ProcessCacheEntry)(ptr)
+			element := (*model.ProcessCacheEntry)(ptr)
 
-			result := element.ResolveBasename((*Event)(ctx.Object))
-
-			values = append(values, result)
-
-			ptr = iterator.Next()
-		}
-
-		return values, nil
-
-	case "process.ancestors.comm":
-
-		var values []string
-
-		ctx := &eval.Context{}
-		ctx.SetObject(unsafe.Pointer(e))
-
-		iterator := &ProcessAncestorsIterator{}
-		ptr := iterator.Front(ctx)
-
-		for ptr != nil {
-			element := (*ProcessCacheEntry)(ptr)
-
-			result := element.ResolveComm((*Event)(ctx.Object))
+			result := (*Event)(ctx.Object).ResolveExecBasename(&element.ExecEvent)
 
 			values = append(values, result)
 
@@ -2098,13 +2027,13 @@ func (e *Event) GetFieldValue(field eval.Field) (interface{}, error) {
 		ctx := &eval.Context{}
 		ctx.SetObject(unsafe.Pointer(e))
 
-		iterator := &ProcessAncestorsIterator{}
+		iterator := &model.ProcessAncestorsIterator{}
 		ptr := iterator.Front(ctx)
 
 		for ptr != nil {
-			element := (*ProcessCacheEntry)(ptr)
+			element := (*model.ProcessCacheEntry)(ptr)
 
-			result := element.ResolveContainerPath((*Event)(ctx.Object))
+			result := (*Event)(ctx.Object).ResolveExecContainerPath(&element.ExecEvent)
 
 			values = append(values, result)
 
@@ -2120,13 +2049,13 @@ func (e *Event) GetFieldValue(field eval.Field) (interface{}, error) {
 		ctx := &eval.Context{}
 		ctx.SetObject(unsafe.Pointer(e))
 
-		iterator := &ProcessAncestorsIterator{}
+		iterator := &model.ProcessAncestorsIterator{}
 		ptr := iterator.Front(ctx)
 
 		for ptr != nil {
-			element := (*ProcessCacheEntry)(ptr)
+			element := (*model.ProcessCacheEntry)(ptr)
 
-			result := int(element.ResolveCookie((*Event)(ctx.Object)))
+			result := int((*Event)(ctx.Object).ResolveExecCookie(&element.ExecEvent))
 
 			values = append(values, result)
 
@@ -2142,13 +2071,13 @@ func (e *Event) GetFieldValue(field eval.Field) (interface{}, error) {
 		ctx := &eval.Context{}
 		ctx.SetObject(unsafe.Pointer(e))
 
-		iterator := &ProcessAncestorsIterator{}
+		iterator := &model.ProcessAncestorsIterator{}
 		ptr := iterator.Front(ctx)
 
 		for ptr != nil {
-			element := (*ProcessCacheEntry)(ptr)
+			element := (*model.ProcessCacheEntry)(ptr)
 
-			result := element.ResolveInode((*Event)(ctx.Object))
+			result := (*Event)(ctx.Object).ResolveExecInode(&element.ExecEvent)
 
 			values = append(values, result)
 
@@ -2164,13 +2093,13 @@ func (e *Event) GetFieldValue(field eval.Field) (interface{}, error) {
 		ctx := &eval.Context{}
 		ctx.SetObject(unsafe.Pointer(e))
 
-		iterator := &ProcessAncestorsIterator{}
+		iterator := &model.ProcessAncestorsIterator{}
 		ptr := iterator.Front(ctx)
 
 		for ptr != nil {
-			element := (*ProcessCacheEntry)(ptr)
+			element := (*model.ProcessCacheEntry)(ptr)
 
-			result := int(element.GID)
+			result := int(element.ProcessContext.GID)
 
 			values = append(values, result)
 
@@ -2186,13 +2115,13 @@ func (e *Event) GetFieldValue(field eval.Field) (interface{}, error) {
 		ctx := &eval.Context{}
 		ctx.SetObject(unsafe.Pointer(e))
 
-		iterator := &ProcessAncestorsIterator{}
+		iterator := &model.ProcessAncestorsIterator{}
 		ptr := iterator.Front(ctx)
 
 		for ptr != nil {
-			element := (*ProcessCacheEntry)(ptr)
+			element := (*model.ProcessCacheEntry)(ptr)
 
-			result := element.ResolveGroup((*Event)(ctx.Object))
+			result := (*Event)(ctx.Object).ResolveExecGroup(&element.ExecEvent)
 
 			values = append(values, result)
 
@@ -2208,13 +2137,13 @@ func (e *Event) GetFieldValue(field eval.Field) (interface{}, error) {
 		ctx := &eval.Context{}
 		ctx.SetObject(unsafe.Pointer(e))
 
-		iterator := &ProcessAncestorsIterator{}
+		iterator := &model.ProcessAncestorsIterator{}
 		ptr := iterator.Front(ctx)
 
 		for ptr != nil {
-			element := (*ProcessCacheEntry)(ptr)
+			element := (*model.ProcessCacheEntry)(ptr)
 
-			result := element.ResolveContainerID((*Event)(ctx.Object))
+			result := (*Event)(ctx.Object).ResolveContainerID(&element.ContainerContext)
 
 			values = append(values, result)
 
@@ -2230,13 +2159,13 @@ func (e *Event) GetFieldValue(field eval.Field) (interface{}, error) {
 		ctx := &eval.Context{}
 		ctx.SetObject(unsafe.Pointer(e))
 
-		iterator := &ProcessAncestorsIterator{}
+		iterator := &model.ProcessAncestorsIterator{}
 		ptr := iterator.Front(ctx)
 
 		for ptr != nil {
-			element := (*ProcessCacheEntry)(ptr)
+			element := (*model.ProcessCacheEntry)(ptr)
 
-			result := int(element.Inode)
+			result := int(element.ProcessContext.ExecEvent.FileFields.Inode)
 
 			values = append(values, result)
 
@@ -2252,13 +2181,13 @@ func (e *Event) GetFieldValue(field eval.Field) (interface{}, error) {
 		ctx := &eval.Context{}
 		ctx.SetObject(unsafe.Pointer(e))
 
-		iterator := &ProcessAncestorsIterator{}
+		iterator := &model.ProcessAncestorsIterator{}
 		ptr := iterator.Front(ctx)
 
 		for ptr != nil {
-			element := (*ProcessCacheEntry)(ptr)
+			element := (*model.ProcessCacheEntry)(ptr)
 
-			result := element.ResolveName((*Event)(ctx.Object))
+			result := (*Event)(ctx.Object).ResolveExecBasename(&element.ExecEvent)
 
 			values = append(values, result)
 
@@ -2274,13 +2203,13 @@ func (e *Event) GetFieldValue(field eval.Field) (interface{}, error) {
 		ctx := &eval.Context{}
 		ctx.SetObject(unsafe.Pointer(e))
 
-		iterator := &ProcessAncestorsIterator{}
+		iterator := &model.ProcessAncestorsIterator{}
 		ptr := iterator.Front(ctx)
 
 		for ptr != nil {
-			element := (*ProcessCacheEntry)(ptr)
+			element := (*model.ProcessCacheEntry)(ptr)
 
-			result := int(element.OverlayNumLower)
+			result := int(element.ProcessContext.ExecEvent.FileFields.OverlayNumLower)
 
 			values = append(values, result)
 
@@ -2296,13 +2225,13 @@ func (e *Event) GetFieldValue(field eval.Field) (interface{}, error) {
 		ctx := &eval.Context{}
 		ctx.SetObject(unsafe.Pointer(e))
 
-		iterator := &ProcessAncestorsIterator{}
+		iterator := &model.ProcessAncestorsIterator{}
 		ptr := iterator.Front(ctx)
 
 		for ptr != nil {
-			element := (*ProcessCacheEntry)(ptr)
+			element := (*model.ProcessCacheEntry)(ptr)
 
-			result := int(element.Pid)
+			result := int(element.ProcessContext.Pid)
 
 			values = append(values, result)
 
@@ -2318,13 +2247,13 @@ func (e *Event) GetFieldValue(field eval.Field) (interface{}, error) {
 		ctx := &eval.Context{}
 		ctx.SetObject(unsafe.Pointer(e))
 
-		iterator := &ProcessAncestorsIterator{}
+		iterator := &model.ProcessAncestorsIterator{}
 		ptr := iterator.Front(ctx)
 
 		for ptr != nil {
-			element := (*ProcessCacheEntry)(ptr)
+			element := (*model.ProcessCacheEntry)(ptr)
 
-			result := int(element.ResolvePPID((*Event)(ctx.Object)))
+			result := int((*Event)(ctx.Object).ResolveExecPPID(&element.ExecEvent))
 
 			values = append(values, result)
 
@@ -2340,13 +2269,13 @@ func (e *Event) GetFieldValue(field eval.Field) (interface{}, error) {
 		ctx := &eval.Context{}
 		ctx.SetObject(unsafe.Pointer(e))
 
-		iterator := &ProcessAncestorsIterator{}
+		iterator := &model.ProcessAncestorsIterator{}
 		ptr := iterator.Front(ctx)
 
 		for ptr != nil {
-			element := (*ProcessCacheEntry)(ptr)
+			element := (*model.ProcessCacheEntry)(ptr)
 
-			result := int(element.Tid)
+			result := int(element.ProcessContext.Tid)
 
 			values = append(values, result)
 
@@ -2362,13 +2291,13 @@ func (e *Event) GetFieldValue(field eval.Field) (interface{}, error) {
 		ctx := &eval.Context{}
 		ctx.SetObject(unsafe.Pointer(e))
 
-		iterator := &ProcessAncestorsIterator{}
+		iterator := &model.ProcessAncestorsIterator{}
 		ptr := iterator.Front(ctx)
 
 		for ptr != nil {
-			element := (*ProcessCacheEntry)(ptr)
+			element := (*model.ProcessCacheEntry)(ptr)
 
-			result := element.ResolveTTY((*Event)(ctx.Object))
+			result := (*Event)(ctx.Object).ResolveExecTTY(&element.ExecEvent)
 
 			values = append(values, result)
 
@@ -2384,13 +2313,13 @@ func (e *Event) GetFieldValue(field eval.Field) (interface{}, error) {
 		ctx := &eval.Context{}
 		ctx.SetObject(unsafe.Pointer(e))
 
-		iterator := &ProcessAncestorsIterator{}
+		iterator := &model.ProcessAncestorsIterator{}
 		ptr := iterator.Front(ctx)
 
 		for ptr != nil {
-			element := (*ProcessCacheEntry)(ptr)
+			element := (*model.ProcessCacheEntry)(ptr)
 
-			result := int(element.UID)
+			result := int(element.ProcessContext.UID)
 
 			values = append(values, result)
 
@@ -2406,13 +2335,13 @@ func (e *Event) GetFieldValue(field eval.Field) (interface{}, error) {
 		ctx := &eval.Context{}
 		ctx.SetObject(unsafe.Pointer(e))
 
-		iterator := &ProcessAncestorsIterator{}
+		iterator := &model.ProcessAncestorsIterator{}
 		ptr := iterator.Front(ctx)
 
 		for ptr != nil {
-			element := (*ProcessCacheEntry)(ptr)
+			element := (*model.ProcessCacheEntry)(ptr)
 
-			result := element.ResolveUser((*Event)(ctx.Object))
+			result := (*Event)(ctx.Object).ResolveExecUser(&element.ExecEvent)
 
 			values = append(values, result)
 
@@ -2423,23 +2352,19 @@ func (e *Event) GetFieldValue(field eval.Field) (interface{}, error) {
 
 	case "process.basename":
 
-		return e.Process.ResolveBasename(e), nil
-
-	case "process.comm":
-
-		return e.Process.ResolveComm(e), nil
+		return e.ResolveExecBasename(&e.Process.ExecEvent), nil
 
 	case "process.container_path":
 
-		return e.Process.ResolveContainerPath(e), nil
+		return e.ResolveExecContainerPath(&e.Process.ExecEvent), nil
 
 	case "process.cookie":
 
-		return int(e.Process.ResolveCookie(e)), nil
+		return int(e.ResolveExecCookie(&e.Process.ExecEvent)), nil
 
 	case "process.filename":
 
-		return e.Process.ResolveInode(e), nil
+		return e.ResolveExecInode(&e.Process.ExecEvent), nil
 
 	case "process.gid":
 
@@ -2447,19 +2372,19 @@ func (e *Event) GetFieldValue(field eval.Field) (interface{}, error) {
 
 	case "process.group":
 
-		return e.Process.ResolveGroup(e), nil
+		return e.ResolveExecGroup(&e.Process.ExecEvent), nil
 
 	case "process.inode":
 
-		return int(e.Process.Inode), nil
+		return int(e.Process.ExecEvent.FileFields.Inode), nil
 
 	case "process.name":
 
-		return e.Process.ResolveName(e), nil
+		return e.ResolveExecBasename(&e.Process.ExecEvent), nil
 
 	case "process.overlay_numlower":
 
-		return int(e.Process.OverlayNumLower), nil
+		return int(e.Process.ExecEvent.FileFields.OverlayNumLower), nil
 
 	case "process.pid":
 
@@ -2467,7 +2392,7 @@ func (e *Event) GetFieldValue(field eval.Field) (interface{}, error) {
 
 	case "process.ppid":
 
-		return int(e.Process.ResolvePPID(e)), nil
+		return int(e.ResolveExecPPID(&e.Process.ExecEvent)), nil
 
 	case "process.tid":
 
@@ -2475,7 +2400,7 @@ func (e *Event) GetFieldValue(field eval.Field) (interface{}, error) {
 
 	case "process.tty_name":
 
-		return e.Process.ResolveTTY(e), nil
+		return e.ResolveExecTTY(&e.Process.ExecEvent), nil
 
 	case "process.uid":
 
@@ -2483,151 +2408,151 @@ func (e *Event) GetFieldValue(field eval.Field) (interface{}, error) {
 
 	case "process.user":
 
-		return e.Process.ResolveUser(e), nil
+		return e.ResolveExecUser(&e.Process.ExecEvent), nil
 
 	case "removexattr.basename":
 
-		return e.RemoveXAttr.ResolveBasename(e), nil
+		return e.ResolveFileBasename(&e.RemoveXAttr.FileEvent), nil
 
 	case "removexattr.container_path":
 
-		return e.RemoveXAttr.ResolveContainerPath(e), nil
+		return e.ResolveFileContainerPath(&e.RemoveXAttr.FileEvent), nil
 
 	case "removexattr.filename":
 
-		return e.RemoveXAttr.ResolveInode(e), nil
+		return e.ResolveFileInode(&e.RemoveXAttr.FileEvent), nil
 
 	case "removexattr.inode":
 
-		return int(e.RemoveXAttr.Inode), nil
+		return int(e.RemoveXAttr.FileEvent.FileFields.Inode), nil
 
 	case "removexattr.name":
 
-		return e.RemoveXAttr.GetName(e), nil
+		return e.GetXAttrName(&e.RemoveXAttr), nil
 
 	case "removexattr.namespace":
 
-		return e.RemoveXAttr.GetNamespace(e), nil
+		return e.GetXAttrNamespace(&e.RemoveXAttr), nil
 
 	case "removexattr.overlay_numlower":
 
-		return int(e.RemoveXAttr.OverlayNumLower), nil
+		return int(e.RemoveXAttr.FileEvent.FileFields.OverlayNumLower), nil
 
 	case "removexattr.retval":
 
-		return int(e.RemoveXAttr.Retval), nil
+		return int(e.RemoveXAttr.SyscallEvent.Retval), nil
 
 	case "rename.new.basename":
 
-		return e.Rename.New.ResolveBasename(e), nil
+		return e.ResolveFileBasename(&e.Rename.New), nil
 
 	case "rename.new.container_path":
 
-		return e.Rename.New.ResolveContainerPath(e), nil
+		return e.ResolveFileContainerPath(&e.Rename.New), nil
 
 	case "rename.new.filename":
 
-		return e.Rename.New.ResolveInode(e), nil
+		return e.ResolveFileInode(&e.Rename.New), nil
 
 	case "rename.new.inode":
 
-		return int(e.Rename.New.Inode), nil
+		return int(e.Rename.New.FileFields.Inode), nil
 
 	case "rename.new.overlay_numlower":
 
-		return int(e.Rename.New.OverlayNumLower), nil
+		return int(e.Rename.New.FileFields.OverlayNumLower), nil
 
 	case "rename.old.basename":
 
-		return e.Rename.Old.ResolveBasename(e), nil
+		return e.ResolveFileBasename(&e.Rename.Old), nil
 
 	case "rename.old.container_path":
 
-		return e.Rename.Old.ResolveContainerPath(e), nil
+		return e.ResolveFileContainerPath(&e.Rename.Old), nil
 
 	case "rename.old.filename":
 
-		return e.Rename.Old.ResolveInode(e), nil
+		return e.ResolveFileInode(&e.Rename.Old), nil
 
 	case "rename.old.inode":
 
-		return int(e.Rename.Old.Inode), nil
+		return int(e.Rename.Old.FileFields.Inode), nil
 
 	case "rename.old.overlay_numlower":
 
-		return int(e.Rename.Old.OverlayNumLower), nil
+		return int(e.Rename.Old.FileFields.OverlayNumLower), nil
 
 	case "rename.retval":
 
-		return int(e.Rename.Retval), nil
+		return int(e.Rename.SyscallEvent.Retval), nil
 
 	case "rmdir.basename":
 
-		return e.Rmdir.ResolveBasename(e), nil
+		return e.ResolveFileBasename(&e.Rmdir.FileEvent), nil
 
 	case "rmdir.container_path":
 
-		return e.Rmdir.ResolveContainerPath(e), nil
+		return e.ResolveFileContainerPath(&e.Rmdir.FileEvent), nil
 
 	case "rmdir.filename":
 
-		return e.Rmdir.ResolveInode(e), nil
+		return e.ResolveFileInode(&e.Rmdir.FileEvent), nil
 
 	case "rmdir.inode":
 
-		return int(e.Rmdir.Inode), nil
+		return int(e.Rmdir.FileEvent.FileFields.Inode), nil
 
 	case "rmdir.overlay_numlower":
 
-		return int(e.Rmdir.OverlayNumLower), nil
+		return int(e.Rmdir.FileEvent.FileFields.OverlayNumLower), nil
 
 	case "rmdir.retval":
 
-		return int(e.Rmdir.Retval), nil
+		return int(e.Rmdir.SyscallEvent.Retval), nil
 
 	case "setxattr.basename":
 
-		return e.SetXAttr.ResolveBasename(e), nil
+		return e.ResolveFileBasename(&e.SetXAttr.FileEvent), nil
 
 	case "setxattr.container_path":
 
-		return e.SetXAttr.ResolveContainerPath(e), nil
+		return e.ResolveFileContainerPath(&e.SetXAttr.FileEvent), nil
 
 	case "setxattr.filename":
 
-		return e.SetXAttr.ResolveInode(e), nil
+		return e.ResolveFileInode(&e.SetXAttr.FileEvent), nil
 
 	case "setxattr.inode":
 
-		return int(e.SetXAttr.Inode), nil
+		return int(e.SetXAttr.FileEvent.FileFields.Inode), nil
 
 	case "setxattr.name":
 
-		return e.SetXAttr.GetName(e), nil
+		return e.GetXAttrName(&e.SetXAttr), nil
 
 	case "setxattr.namespace":
 
-		return e.SetXAttr.GetNamespace(e), nil
+		return e.GetXAttrNamespace(&e.SetXAttr), nil
 
 	case "setxattr.overlay_numlower":
 
-		return int(e.SetXAttr.OverlayNumLower), nil
+		return int(e.SetXAttr.FileEvent.FileFields.OverlayNumLower), nil
 
 	case "setxattr.retval":
 
-		return int(e.SetXAttr.Retval), nil
+		return int(e.SetXAttr.SyscallEvent.Retval), nil
 
 	case "unlink.basename":
 
-		return e.Unlink.ResolveBasename(e), nil
+		return e.ResolveFileBasename(&e.Unlink.FileEvent), nil
 
 	case "unlink.container_path":
 
-		return e.Unlink.ResolveContainerPath(e), nil
+		return e.ResolveFileContainerPath(&e.Unlink.FileEvent), nil
 
 	case "unlink.filename":
 
-		return e.Unlink.ResolveInode(e), nil
+		return e.ResolveFileInode(&e.Unlink.FileEvent), nil
 
 	case "unlink.flags":
 
@@ -2635,39 +2560,39 @@ func (e *Event) GetFieldValue(field eval.Field) (interface{}, error) {
 
 	case "unlink.inode":
 
-		return int(e.Unlink.Inode), nil
+		return int(e.Unlink.FileEvent.FileFields.Inode), nil
 
 	case "unlink.overlay_numlower":
 
-		return int(e.Unlink.OverlayNumLower), nil
+		return int(e.Unlink.FileEvent.FileFields.OverlayNumLower), nil
 
 	case "unlink.retval":
 
-		return int(e.Unlink.Retval), nil
+		return int(e.Unlink.SyscallEvent.Retval), nil
 
 	case "utimes.basename":
 
-		return e.Utimes.ResolveBasename(e), nil
+		return e.ResolveFileBasename(&e.Utimes.FileEvent), nil
 
 	case "utimes.container_path":
 
-		return e.Utimes.ResolveContainerPath(e), nil
+		return e.ResolveFileContainerPath(&e.Utimes.FileEvent), nil
 
 	case "utimes.filename":
 
-		return e.Utimes.ResolveInode(e), nil
+		return e.ResolveFileInode(&e.Utimes.FileEvent), nil
 
 	case "utimes.inode":
 
-		return int(e.Utimes.Inode), nil
+		return int(e.Utimes.FileEvent.FileFields.Inode), nil
 
 	case "utimes.overlay_numlower":
 
-		return int(e.Utimes.OverlayNumLower), nil
+		return int(e.Utimes.FileEvent.FileFields.OverlayNumLower), nil
 
 	case "utimes.retval":
 
-		return int(e.Utimes.Retval), nil
+		return int(e.Utimes.SyscallEvent.Retval), nil
 
 	}
 
@@ -2728,9 +2653,6 @@ func (e *Event) GetFieldEventType(field eval.Field) (eval.EventType, error) {
 	case "exec.basename":
 		return "exec", nil
 
-	case "exec.comm":
-		return "exec", nil
-
 	case "exec.container_path":
 		return "exec", nil
 
@@ -2848,9 +2770,6 @@ func (e *Event) GetFieldEventType(field eval.Field) (eval.EventType, error) {
 	case "process.ancestors.basename":
 		return "*", nil
 
-	case "process.ancestors.comm":
-		return "*", nil
-
 	case "process.ancestors.container_path":
 		return "*", nil
 
@@ -2897,9 +2816,6 @@ func (e *Event) GetFieldEventType(field eval.Field) (eval.EventType, error) {
 		return "*", nil
 
 	case "process.basename":
-		return "*", nil
-
-	case "process.comm":
 		return "*", nil
 
 	case "process.container_path":
@@ -3158,10 +3074,6 @@ func (e *Event) GetFieldType(field eval.Field) (reflect.Kind, error) {
 
 		return reflect.String, nil
 
-	case "exec.comm":
-
-		return reflect.String, nil
-
 	case "exec.container_path":
 
 		return reflect.String, nil
@@ -3318,10 +3230,6 @@ func (e *Event) GetFieldType(field eval.Field) (reflect.Kind, error) {
 
 		return reflect.Slice, nil
 
-	case "process.ancestors.comm":
-
-		return reflect.Slice, nil
-
 	case "process.ancestors.container_path":
 
 		return reflect.Slice, nil
@@ -3383,10 +3291,6 @@ func (e *Event) GetFieldType(field eval.Field) (reflect.Kind, error) {
 		return reflect.Slice, nil
 
 	case "process.basename":
-
-		return reflect.String, nil
-
-	case "process.comm":
 
 		return reflect.String, nil
 
@@ -3641,22 +3545,22 @@ func (e *Event) SetFieldValue(field eval.Field, value interface{}) error {
 
 	case "chmod.basename":
 
-		if e.Chmod.BasenameStr, ok = value.(string); !ok {
-			return &eval.ErrValueTypeMismatch{Field: "Chmod.BasenameStr"}
+		if e.Chmod.FileEvent.BasenameStr, ok = value.(string); !ok {
+			return &eval.ErrValueTypeMismatch{Field: "Chmod.FileEvent.BasenameStr"}
 		}
 		return nil
 
 	case "chmod.container_path":
 
-		if e.Chmod.ContainerPath, ok = value.(string); !ok {
-			return &eval.ErrValueTypeMismatch{Field: "Chmod.ContainerPath"}
+		if e.Chmod.FileEvent.ContainerPath, ok = value.(string); !ok {
+			return &eval.ErrValueTypeMismatch{Field: "Chmod.FileEvent.ContainerPath"}
 		}
 		return nil
 
 	case "chmod.filename":
 
-		if e.Chmod.PathnameStr, ok = value.(string); !ok {
-			return &eval.ErrValueTypeMismatch{Field: "Chmod.PathnameStr"}
+		if e.Chmod.FileEvent.PathnameStr, ok = value.(string); !ok {
+			return &eval.ErrValueTypeMismatch{Field: "Chmod.FileEvent.PathnameStr"}
 		}
 		return nil
 
@@ -3664,9 +3568,9 @@ func (e *Event) SetFieldValue(field eval.Field, value interface{}) error {
 
 		v, ok := value.(int)
 		if !ok {
-			return &eval.ErrValueTypeMismatch{Field: "Chmod.Inode"}
+			return &eval.ErrValueTypeMismatch{Field: "Chmod.FileEvent.FileFields.Inode"}
 		}
-		e.Chmod.Inode = uint64(v)
+		e.Chmod.FileEvent.FileFields.Inode = uint64(v)
 		return nil
 
 	case "chmod.mode":
@@ -3682,38 +3586,38 @@ func (e *Event) SetFieldValue(field eval.Field, value interface{}) error {
 
 		v, ok := value.(int)
 		if !ok {
-			return &eval.ErrValueTypeMismatch{Field: "Chmod.OverlayNumLower"}
+			return &eval.ErrValueTypeMismatch{Field: "Chmod.FileEvent.FileFields.OverlayNumLower"}
 		}
-		e.Chmod.OverlayNumLower = int32(v)
+		e.Chmod.FileEvent.FileFields.OverlayNumLower = int32(v)
 		return nil
 
 	case "chmod.retval":
 
 		v, ok := value.(int)
 		if !ok {
-			return &eval.ErrValueTypeMismatch{Field: "Chmod.Retval"}
+			return &eval.ErrValueTypeMismatch{Field: "Chmod.SyscallEvent.Retval"}
 		}
-		e.Chmod.Retval = int64(v)
+		e.Chmod.SyscallEvent.Retval = int64(v)
 		return nil
 
 	case "chown.basename":
 
-		if e.Chown.BasenameStr, ok = value.(string); !ok {
-			return &eval.ErrValueTypeMismatch{Field: "Chown.BasenameStr"}
+		if e.Chown.FileEvent.BasenameStr, ok = value.(string); !ok {
+			return &eval.ErrValueTypeMismatch{Field: "Chown.FileEvent.BasenameStr"}
 		}
 		return nil
 
 	case "chown.container_path":
 
-		if e.Chown.ContainerPath, ok = value.(string); !ok {
-			return &eval.ErrValueTypeMismatch{Field: "Chown.ContainerPath"}
+		if e.Chown.FileEvent.ContainerPath, ok = value.(string); !ok {
+			return &eval.ErrValueTypeMismatch{Field: "Chown.FileEvent.ContainerPath"}
 		}
 		return nil
 
 	case "chown.filename":
 
-		if e.Chown.PathnameStr, ok = value.(string); !ok {
-			return &eval.ErrValueTypeMismatch{Field: "Chown.PathnameStr"}
+		if e.Chown.FileEvent.PathnameStr, ok = value.(string); !ok {
+			return &eval.ErrValueTypeMismatch{Field: "Chown.FileEvent.PathnameStr"}
 		}
 		return nil
 
@@ -3730,27 +3634,27 @@ func (e *Event) SetFieldValue(field eval.Field, value interface{}) error {
 
 		v, ok := value.(int)
 		if !ok {
-			return &eval.ErrValueTypeMismatch{Field: "Chown.Inode"}
+			return &eval.ErrValueTypeMismatch{Field: "Chown.FileEvent.FileFields.Inode"}
 		}
-		e.Chown.Inode = uint64(v)
+		e.Chown.FileEvent.FileFields.Inode = uint64(v)
 		return nil
 
 	case "chown.overlay_numlower":
 
 		v, ok := value.(int)
 		if !ok {
-			return &eval.ErrValueTypeMismatch{Field: "Chown.OverlayNumLower"}
+			return &eval.ErrValueTypeMismatch{Field: "Chown.FileEvent.FileFields.OverlayNumLower"}
 		}
-		e.Chown.OverlayNumLower = int32(v)
+		e.Chown.FileEvent.FileFields.OverlayNumLower = int32(v)
 		return nil
 
 	case "chown.retval":
 
 		v, ok := value.(int)
 		if !ok {
-			return &eval.ErrValueTypeMismatch{Field: "Chown.Retval"}
+			return &eval.ErrValueTypeMismatch{Field: "Chown.SyscallEvent.Retval"}
 		}
-		e.Chown.Retval = int64(v)
+		e.Chown.SyscallEvent.Retval = int64(v)
 		return nil
 
 	case "chown.uid":
@@ -3773,13 +3677,6 @@ func (e *Event) SetFieldValue(field eval.Field, value interface{}) error {
 
 		if e.Exec.BasenameStr, ok = value.(string); !ok {
 			return &eval.ErrValueTypeMismatch{Field: "Exec.BasenameStr"}
-		}
-		return nil
-
-	case "exec.comm":
-
-		if e.Exec.Comm, ok = value.(string); !ok {
-			return &eval.ErrValueTypeMismatch{Field: "Exec.Comm"}
 		}
 		return nil
 
@@ -3826,9 +3723,9 @@ func (e *Event) SetFieldValue(field eval.Field, value interface{}) error {
 
 		v, ok := value.(int)
 		if !ok {
-			return &eval.ErrValueTypeMismatch{Field: "Exec.Inode"}
+			return &eval.ErrValueTypeMismatch{Field: "Exec.FileFields.Inode"}
 		}
-		e.Exec.Inode = uint64(v)
+		e.Exec.FileFields.Inode = uint64(v)
 		return nil
 
 	case "exec.name":
@@ -3842,9 +3739,9 @@ func (e *Event) SetFieldValue(field eval.Field, value interface{}) error {
 
 		v, ok := value.(int)
 		if !ok {
-			return &eval.ErrValueTypeMismatch{Field: "Exec.OverlayNumLower"}
+			return &eval.ErrValueTypeMismatch{Field: "Exec.FileFields.OverlayNumLower"}
 		}
-		e.Exec.OverlayNumLower = int32(v)
+		e.Exec.FileFields.OverlayNumLower = int32(v)
 		return nil
 
 	case "exec.ppid":
@@ -3883,9 +3780,9 @@ func (e *Event) SetFieldValue(field eval.Field, value interface{}) error {
 
 		v, ok := value.(int)
 		if !ok {
-			return &eval.ErrValueTypeMismatch{Field: "Link.Retval"}
+			return &eval.ErrValueTypeMismatch{Field: "Link.SyscallEvent.Retval"}
 		}
-		e.Link.Retval = int64(v)
+		e.Link.SyscallEvent.Retval = int64(v)
 		return nil
 
 	case "link.source.basename":
@@ -3913,18 +3810,18 @@ func (e *Event) SetFieldValue(field eval.Field, value interface{}) error {
 
 		v, ok := value.(int)
 		if !ok {
-			return &eval.ErrValueTypeMismatch{Field: "Link.Source.Inode"}
+			return &eval.ErrValueTypeMismatch{Field: "Link.Source.FileFields.Inode"}
 		}
-		e.Link.Source.Inode = uint64(v)
+		e.Link.Source.FileFields.Inode = uint64(v)
 		return nil
 
 	case "link.source.overlay_numlower":
 
 		v, ok := value.(int)
 		if !ok {
-			return &eval.ErrValueTypeMismatch{Field: "Link.Source.OverlayNumLower"}
+			return &eval.ErrValueTypeMismatch{Field: "Link.Source.FileFields.OverlayNumLower"}
 		}
-		e.Link.Source.OverlayNumLower = int32(v)
+		e.Link.Source.FileFields.OverlayNumLower = int32(v)
 		return nil
 
 	case "link.target.basename":
@@ -3952,38 +3849,38 @@ func (e *Event) SetFieldValue(field eval.Field, value interface{}) error {
 
 		v, ok := value.(int)
 		if !ok {
-			return &eval.ErrValueTypeMismatch{Field: "Link.Target.Inode"}
+			return &eval.ErrValueTypeMismatch{Field: "Link.Target.FileFields.Inode"}
 		}
-		e.Link.Target.Inode = uint64(v)
+		e.Link.Target.FileFields.Inode = uint64(v)
 		return nil
 
 	case "link.target.overlay_numlower":
 
 		v, ok := value.(int)
 		if !ok {
-			return &eval.ErrValueTypeMismatch{Field: "Link.Target.OverlayNumLower"}
+			return &eval.ErrValueTypeMismatch{Field: "Link.Target.FileFields.OverlayNumLower"}
 		}
-		e.Link.Target.OverlayNumLower = int32(v)
+		e.Link.Target.FileFields.OverlayNumLower = int32(v)
 		return nil
 
 	case "mkdir.basename":
 
-		if e.Mkdir.BasenameStr, ok = value.(string); !ok {
-			return &eval.ErrValueTypeMismatch{Field: "Mkdir.BasenameStr"}
+		if e.Mkdir.FileEvent.BasenameStr, ok = value.(string); !ok {
+			return &eval.ErrValueTypeMismatch{Field: "Mkdir.FileEvent.BasenameStr"}
 		}
 		return nil
 
 	case "mkdir.container_path":
 
-		if e.Mkdir.ContainerPath, ok = value.(string); !ok {
-			return &eval.ErrValueTypeMismatch{Field: "Mkdir.ContainerPath"}
+		if e.Mkdir.FileEvent.ContainerPath, ok = value.(string); !ok {
+			return &eval.ErrValueTypeMismatch{Field: "Mkdir.FileEvent.ContainerPath"}
 		}
 		return nil
 
 	case "mkdir.filename":
 
-		if e.Mkdir.PathnameStr, ok = value.(string); !ok {
-			return &eval.ErrValueTypeMismatch{Field: "Mkdir.PathnameStr"}
+		if e.Mkdir.FileEvent.PathnameStr, ok = value.(string); !ok {
+			return &eval.ErrValueTypeMismatch{Field: "Mkdir.FileEvent.PathnameStr"}
 		}
 		return nil
 
@@ -3991,9 +3888,9 @@ func (e *Event) SetFieldValue(field eval.Field, value interface{}) error {
 
 		v, ok := value.(int)
 		if !ok {
-			return &eval.ErrValueTypeMismatch{Field: "Mkdir.Inode"}
+			return &eval.ErrValueTypeMismatch{Field: "Mkdir.FileEvent.FileFields.Inode"}
 		}
-		e.Mkdir.Inode = uint64(v)
+		e.Mkdir.FileEvent.FileFields.Inode = uint64(v)
 		return nil
 
 	case "mkdir.mode":
@@ -4009,38 +3906,38 @@ func (e *Event) SetFieldValue(field eval.Field, value interface{}) error {
 
 		v, ok := value.(int)
 		if !ok {
-			return &eval.ErrValueTypeMismatch{Field: "Mkdir.OverlayNumLower"}
+			return &eval.ErrValueTypeMismatch{Field: "Mkdir.FileEvent.FileFields.OverlayNumLower"}
 		}
-		e.Mkdir.OverlayNumLower = int32(v)
+		e.Mkdir.FileEvent.FileFields.OverlayNumLower = int32(v)
 		return nil
 
 	case "mkdir.retval":
 
 		v, ok := value.(int)
 		if !ok {
-			return &eval.ErrValueTypeMismatch{Field: "Mkdir.Retval"}
+			return &eval.ErrValueTypeMismatch{Field: "Mkdir.SyscallEvent.Retval"}
 		}
-		e.Mkdir.Retval = int64(v)
+		e.Mkdir.SyscallEvent.Retval = int64(v)
 		return nil
 
 	case "open.basename":
 
-		if e.Open.BasenameStr, ok = value.(string); !ok {
-			return &eval.ErrValueTypeMismatch{Field: "Open.BasenameStr"}
+		if e.Open.FileEvent.BasenameStr, ok = value.(string); !ok {
+			return &eval.ErrValueTypeMismatch{Field: "Open.FileEvent.BasenameStr"}
 		}
 		return nil
 
 	case "open.container_path":
 
-		if e.Open.ContainerPath, ok = value.(string); !ok {
-			return &eval.ErrValueTypeMismatch{Field: "Open.ContainerPath"}
+		if e.Open.FileEvent.ContainerPath, ok = value.(string); !ok {
+			return &eval.ErrValueTypeMismatch{Field: "Open.FileEvent.ContainerPath"}
 		}
 		return nil
 
 	case "open.filename":
 
-		if e.Open.PathnameStr, ok = value.(string); !ok {
-			return &eval.ErrValueTypeMismatch{Field: "Open.PathnameStr"}
+		if e.Open.FileEvent.PathnameStr, ok = value.(string); !ok {
+			return &eval.ErrValueTypeMismatch{Field: "Open.FileEvent.PathnameStr"}
 		}
 		return nil
 
@@ -4057,9 +3954,9 @@ func (e *Event) SetFieldValue(field eval.Field, value interface{}) error {
 
 		v, ok := value.(int)
 		if !ok {
-			return &eval.ErrValueTypeMismatch{Field: "Open.Inode"}
+			return &eval.ErrValueTypeMismatch{Field: "Open.FileEvent.FileFields.Inode"}
 		}
-		e.Open.Inode = uint64(v)
+		e.Open.FileEvent.FileFields.Inode = uint64(v)
 		return nil
 
 	case "open.mode":
@@ -4075,38 +3972,31 @@ func (e *Event) SetFieldValue(field eval.Field, value interface{}) error {
 
 		v, ok := value.(int)
 		if !ok {
-			return &eval.ErrValueTypeMismatch{Field: "Open.OverlayNumLower"}
+			return &eval.ErrValueTypeMismatch{Field: "Open.FileEvent.FileFields.OverlayNumLower"}
 		}
-		e.Open.OverlayNumLower = int32(v)
+		e.Open.FileEvent.FileFields.OverlayNumLower = int32(v)
 		return nil
 
 	case "open.retval":
 
 		v, ok := value.(int)
 		if !ok {
-			return &eval.ErrValueTypeMismatch{Field: "Open.Retval"}
+			return &eval.ErrValueTypeMismatch{Field: "Open.SyscallEvent.Retval"}
 		}
-		e.Open.Retval = int64(v)
+		e.Open.SyscallEvent.Retval = int64(v)
 		return nil
 
 	case "process.basename":
 
-		if e.Process.BasenameStr, ok = value.(string); !ok {
-			return &eval.ErrValueTypeMismatch{Field: "Process.BasenameStr"}
-		}
-		return nil
-
-	case "process.comm":
-
-		if e.Process.Comm, ok = value.(string); !ok {
-			return &eval.ErrValueTypeMismatch{Field: "Process.Comm"}
+		if e.Process.ExecEvent.BasenameStr, ok = value.(string); !ok {
+			return &eval.ErrValueTypeMismatch{Field: "Process.ExecEvent.BasenameStr"}
 		}
 		return nil
 
 	case "process.container_path":
 
-		if e.Process.ContainerPath, ok = value.(string); !ok {
-			return &eval.ErrValueTypeMismatch{Field: "Process.ContainerPath"}
+		if e.Process.ExecEvent.ContainerPath, ok = value.(string); !ok {
+			return &eval.ErrValueTypeMismatch{Field: "Process.ExecEvent.ContainerPath"}
 		}
 		return nil
 
@@ -4114,15 +4004,15 @@ func (e *Event) SetFieldValue(field eval.Field, value interface{}) error {
 
 		v, ok := value.(int)
 		if !ok {
-			return &eval.ErrValueTypeMismatch{Field: "Process.Cookie"}
+			return &eval.ErrValueTypeMismatch{Field: "Process.ExecEvent.Cookie"}
 		}
-		e.Process.Cookie = uint32(v)
+		e.Process.ExecEvent.Cookie = uint32(v)
 		return nil
 
 	case "process.filename":
 
-		if e.Process.PathnameStr, ok = value.(string); !ok {
-			return &eval.ErrValueTypeMismatch{Field: "Process.PathnameStr"}
+		if e.Process.ExecEvent.PathnameStr, ok = value.(string); !ok {
+			return &eval.ErrValueTypeMismatch{Field: "Process.ExecEvent.PathnameStr"}
 		}
 		return nil
 
@@ -4137,8 +4027,8 @@ func (e *Event) SetFieldValue(field eval.Field, value interface{}) error {
 
 	case "process.group":
 
-		if e.Process.Group, ok = value.(string); !ok {
-			return &eval.ErrValueTypeMismatch{Field: "Process.Group"}
+		if e.Process.ExecEvent.Group, ok = value.(string); !ok {
+			return &eval.ErrValueTypeMismatch{Field: "Process.ExecEvent.Group"}
 		}
 		return nil
 
@@ -4146,15 +4036,15 @@ func (e *Event) SetFieldValue(field eval.Field, value interface{}) error {
 
 		v, ok := value.(int)
 		if !ok {
-			return &eval.ErrValueTypeMismatch{Field: "Process.Inode"}
+			return &eval.ErrValueTypeMismatch{Field: "Process.ExecEvent.FileFields.Inode"}
 		}
-		e.Process.Inode = uint64(v)
+		e.Process.ExecEvent.FileFields.Inode = uint64(v)
 		return nil
 
 	case "process.name":
 
-		if e.Process.Name, ok = value.(string); !ok {
-			return &eval.ErrValueTypeMismatch{Field: "Process.Name"}
+		if e.Process.ExecEvent.Name, ok = value.(string); !ok {
+			return &eval.ErrValueTypeMismatch{Field: "Process.ExecEvent.Name"}
 		}
 		return nil
 
@@ -4162,9 +4052,9 @@ func (e *Event) SetFieldValue(field eval.Field, value interface{}) error {
 
 		v, ok := value.(int)
 		if !ok {
-			return &eval.ErrValueTypeMismatch{Field: "Process.OverlayNumLower"}
+			return &eval.ErrValueTypeMismatch{Field: "Process.ExecEvent.FileFields.OverlayNumLower"}
 		}
-		e.Process.OverlayNumLower = int32(v)
+		e.Process.ExecEvent.FileFields.OverlayNumLower = int32(v)
 		return nil
 
 	case "process.pid":
@@ -4180,9 +4070,9 @@ func (e *Event) SetFieldValue(field eval.Field, value interface{}) error {
 
 		v, ok := value.(int)
 		if !ok {
-			return &eval.ErrValueTypeMismatch{Field: "Process.PPid"}
+			return &eval.ErrValueTypeMismatch{Field: "Process.ExecEvent.PPid"}
 		}
-		e.Process.PPid = uint32(v)
+		e.Process.ExecEvent.PPid = uint32(v)
 		return nil
 
 	case "process.tid":
@@ -4196,8 +4086,8 @@ func (e *Event) SetFieldValue(field eval.Field, value interface{}) error {
 
 	case "process.tty_name":
 
-		if e.Process.TTYName, ok = value.(string); !ok {
-			return &eval.ErrValueTypeMismatch{Field: "Process.TTYName"}
+		if e.Process.ExecEvent.TTYName, ok = value.(string); !ok {
+			return &eval.ErrValueTypeMismatch{Field: "Process.ExecEvent.TTYName"}
 		}
 		return nil
 
@@ -4212,29 +4102,29 @@ func (e *Event) SetFieldValue(field eval.Field, value interface{}) error {
 
 	case "process.user":
 
-		if e.Process.User, ok = value.(string); !ok {
-			return &eval.ErrValueTypeMismatch{Field: "Process.User"}
+		if e.Process.ExecEvent.User, ok = value.(string); !ok {
+			return &eval.ErrValueTypeMismatch{Field: "Process.ExecEvent.User"}
 		}
 		return nil
 
 	case "removexattr.basename":
 
-		if e.RemoveXAttr.BasenameStr, ok = value.(string); !ok {
-			return &eval.ErrValueTypeMismatch{Field: "RemoveXAttr.BasenameStr"}
+		if e.RemoveXAttr.FileEvent.BasenameStr, ok = value.(string); !ok {
+			return &eval.ErrValueTypeMismatch{Field: "RemoveXAttr.FileEvent.BasenameStr"}
 		}
 		return nil
 
 	case "removexattr.container_path":
 
-		if e.RemoveXAttr.ContainerPath, ok = value.(string); !ok {
-			return &eval.ErrValueTypeMismatch{Field: "RemoveXAttr.ContainerPath"}
+		if e.RemoveXAttr.FileEvent.ContainerPath, ok = value.(string); !ok {
+			return &eval.ErrValueTypeMismatch{Field: "RemoveXAttr.FileEvent.ContainerPath"}
 		}
 		return nil
 
 	case "removexattr.filename":
 
-		if e.RemoveXAttr.PathnameStr, ok = value.(string); !ok {
-			return &eval.ErrValueTypeMismatch{Field: "RemoveXAttr.PathnameStr"}
+		if e.RemoveXAttr.FileEvent.PathnameStr, ok = value.(string); !ok {
+			return &eval.ErrValueTypeMismatch{Field: "RemoveXAttr.FileEvent.PathnameStr"}
 		}
 		return nil
 
@@ -4242,9 +4132,9 @@ func (e *Event) SetFieldValue(field eval.Field, value interface{}) error {
 
 		v, ok := value.(int)
 		if !ok {
-			return &eval.ErrValueTypeMismatch{Field: "RemoveXAttr.Inode"}
+			return &eval.ErrValueTypeMismatch{Field: "RemoveXAttr.FileEvent.FileFields.Inode"}
 		}
-		e.RemoveXAttr.Inode = uint64(v)
+		e.RemoveXAttr.FileEvent.FileFields.Inode = uint64(v)
 		return nil
 
 	case "removexattr.name":
@@ -4265,18 +4155,18 @@ func (e *Event) SetFieldValue(field eval.Field, value interface{}) error {
 
 		v, ok := value.(int)
 		if !ok {
-			return &eval.ErrValueTypeMismatch{Field: "RemoveXAttr.OverlayNumLower"}
+			return &eval.ErrValueTypeMismatch{Field: "RemoveXAttr.FileEvent.FileFields.OverlayNumLower"}
 		}
-		e.RemoveXAttr.OverlayNumLower = int32(v)
+		e.RemoveXAttr.FileEvent.FileFields.OverlayNumLower = int32(v)
 		return nil
 
 	case "removexattr.retval":
 
 		v, ok := value.(int)
 		if !ok {
-			return &eval.ErrValueTypeMismatch{Field: "RemoveXAttr.Retval"}
+			return &eval.ErrValueTypeMismatch{Field: "RemoveXAttr.SyscallEvent.Retval"}
 		}
-		e.RemoveXAttr.Retval = int64(v)
+		e.RemoveXAttr.SyscallEvent.Retval = int64(v)
 		return nil
 
 	case "rename.new.basename":
@@ -4304,18 +4194,18 @@ func (e *Event) SetFieldValue(field eval.Field, value interface{}) error {
 
 		v, ok := value.(int)
 		if !ok {
-			return &eval.ErrValueTypeMismatch{Field: "Rename.New.Inode"}
+			return &eval.ErrValueTypeMismatch{Field: "Rename.New.FileFields.Inode"}
 		}
-		e.Rename.New.Inode = uint64(v)
+		e.Rename.New.FileFields.Inode = uint64(v)
 		return nil
 
 	case "rename.new.overlay_numlower":
 
 		v, ok := value.(int)
 		if !ok {
-			return &eval.ErrValueTypeMismatch{Field: "Rename.New.OverlayNumLower"}
+			return &eval.ErrValueTypeMismatch{Field: "Rename.New.FileFields.OverlayNumLower"}
 		}
-		e.Rename.New.OverlayNumLower = int32(v)
+		e.Rename.New.FileFields.OverlayNumLower = int32(v)
 		return nil
 
 	case "rename.old.basename":
@@ -4343,47 +4233,47 @@ func (e *Event) SetFieldValue(field eval.Field, value interface{}) error {
 
 		v, ok := value.(int)
 		if !ok {
-			return &eval.ErrValueTypeMismatch{Field: "Rename.Old.Inode"}
+			return &eval.ErrValueTypeMismatch{Field: "Rename.Old.FileFields.Inode"}
 		}
-		e.Rename.Old.Inode = uint64(v)
+		e.Rename.Old.FileFields.Inode = uint64(v)
 		return nil
 
 	case "rename.old.overlay_numlower":
 
 		v, ok := value.(int)
 		if !ok {
-			return &eval.ErrValueTypeMismatch{Field: "Rename.Old.OverlayNumLower"}
+			return &eval.ErrValueTypeMismatch{Field: "Rename.Old.FileFields.OverlayNumLower"}
 		}
-		e.Rename.Old.OverlayNumLower = int32(v)
+		e.Rename.Old.FileFields.OverlayNumLower = int32(v)
 		return nil
 
 	case "rename.retval":
 
 		v, ok := value.(int)
 		if !ok {
-			return &eval.ErrValueTypeMismatch{Field: "Rename.Retval"}
+			return &eval.ErrValueTypeMismatch{Field: "Rename.SyscallEvent.Retval"}
 		}
-		e.Rename.Retval = int64(v)
+		e.Rename.SyscallEvent.Retval = int64(v)
 		return nil
 
 	case "rmdir.basename":
 
-		if e.Rmdir.BasenameStr, ok = value.(string); !ok {
-			return &eval.ErrValueTypeMismatch{Field: "Rmdir.BasenameStr"}
+		if e.Rmdir.FileEvent.BasenameStr, ok = value.(string); !ok {
+			return &eval.ErrValueTypeMismatch{Field: "Rmdir.FileEvent.BasenameStr"}
 		}
 		return nil
 
 	case "rmdir.container_path":
 
-		if e.Rmdir.ContainerPath, ok = value.(string); !ok {
-			return &eval.ErrValueTypeMismatch{Field: "Rmdir.ContainerPath"}
+		if e.Rmdir.FileEvent.ContainerPath, ok = value.(string); !ok {
+			return &eval.ErrValueTypeMismatch{Field: "Rmdir.FileEvent.ContainerPath"}
 		}
 		return nil
 
 	case "rmdir.filename":
 
-		if e.Rmdir.PathnameStr, ok = value.(string); !ok {
-			return &eval.ErrValueTypeMismatch{Field: "Rmdir.PathnameStr"}
+		if e.Rmdir.FileEvent.PathnameStr, ok = value.(string); !ok {
+			return &eval.ErrValueTypeMismatch{Field: "Rmdir.FileEvent.PathnameStr"}
 		}
 		return nil
 
@@ -4391,47 +4281,47 @@ func (e *Event) SetFieldValue(field eval.Field, value interface{}) error {
 
 		v, ok := value.(int)
 		if !ok {
-			return &eval.ErrValueTypeMismatch{Field: "Rmdir.Inode"}
+			return &eval.ErrValueTypeMismatch{Field: "Rmdir.FileEvent.FileFields.Inode"}
 		}
-		e.Rmdir.Inode = uint64(v)
+		e.Rmdir.FileEvent.FileFields.Inode = uint64(v)
 		return nil
 
 	case "rmdir.overlay_numlower":
 
 		v, ok := value.(int)
 		if !ok {
-			return &eval.ErrValueTypeMismatch{Field: "Rmdir.OverlayNumLower"}
+			return &eval.ErrValueTypeMismatch{Field: "Rmdir.FileEvent.FileFields.OverlayNumLower"}
 		}
-		e.Rmdir.OverlayNumLower = int32(v)
+		e.Rmdir.FileEvent.FileFields.OverlayNumLower = int32(v)
 		return nil
 
 	case "rmdir.retval":
 
 		v, ok := value.(int)
 		if !ok {
-			return &eval.ErrValueTypeMismatch{Field: "Rmdir.Retval"}
+			return &eval.ErrValueTypeMismatch{Field: "Rmdir.SyscallEvent.Retval"}
 		}
-		e.Rmdir.Retval = int64(v)
+		e.Rmdir.SyscallEvent.Retval = int64(v)
 		return nil
 
 	case "setxattr.basename":
 
-		if e.SetXAttr.BasenameStr, ok = value.(string); !ok {
-			return &eval.ErrValueTypeMismatch{Field: "SetXAttr.BasenameStr"}
+		if e.SetXAttr.FileEvent.BasenameStr, ok = value.(string); !ok {
+			return &eval.ErrValueTypeMismatch{Field: "SetXAttr.FileEvent.BasenameStr"}
 		}
 		return nil
 
 	case "setxattr.container_path":
 
-		if e.SetXAttr.ContainerPath, ok = value.(string); !ok {
-			return &eval.ErrValueTypeMismatch{Field: "SetXAttr.ContainerPath"}
+		if e.SetXAttr.FileEvent.ContainerPath, ok = value.(string); !ok {
+			return &eval.ErrValueTypeMismatch{Field: "SetXAttr.FileEvent.ContainerPath"}
 		}
 		return nil
 
 	case "setxattr.filename":
 
-		if e.SetXAttr.PathnameStr, ok = value.(string); !ok {
-			return &eval.ErrValueTypeMismatch{Field: "SetXAttr.PathnameStr"}
+		if e.SetXAttr.FileEvent.PathnameStr, ok = value.(string); !ok {
+			return &eval.ErrValueTypeMismatch{Field: "SetXAttr.FileEvent.PathnameStr"}
 		}
 		return nil
 
@@ -4439,9 +4329,9 @@ func (e *Event) SetFieldValue(field eval.Field, value interface{}) error {
 
 		v, ok := value.(int)
 		if !ok {
-			return &eval.ErrValueTypeMismatch{Field: "SetXAttr.Inode"}
+			return &eval.ErrValueTypeMismatch{Field: "SetXAttr.FileEvent.FileFields.Inode"}
 		}
-		e.SetXAttr.Inode = uint64(v)
+		e.SetXAttr.FileEvent.FileFields.Inode = uint64(v)
 		return nil
 
 	case "setxattr.name":
@@ -4462,38 +4352,38 @@ func (e *Event) SetFieldValue(field eval.Field, value interface{}) error {
 
 		v, ok := value.(int)
 		if !ok {
-			return &eval.ErrValueTypeMismatch{Field: "SetXAttr.OverlayNumLower"}
+			return &eval.ErrValueTypeMismatch{Field: "SetXAttr.FileEvent.FileFields.OverlayNumLower"}
 		}
-		e.SetXAttr.OverlayNumLower = int32(v)
+		e.SetXAttr.FileEvent.FileFields.OverlayNumLower = int32(v)
 		return nil
 
 	case "setxattr.retval":
 
 		v, ok := value.(int)
 		if !ok {
-			return &eval.ErrValueTypeMismatch{Field: "SetXAttr.Retval"}
+			return &eval.ErrValueTypeMismatch{Field: "SetXAttr.SyscallEvent.Retval"}
 		}
-		e.SetXAttr.Retval = int64(v)
+		e.SetXAttr.SyscallEvent.Retval = int64(v)
 		return nil
 
 	case "unlink.basename":
 
-		if e.Unlink.BasenameStr, ok = value.(string); !ok {
-			return &eval.ErrValueTypeMismatch{Field: "Unlink.BasenameStr"}
+		if e.Unlink.FileEvent.BasenameStr, ok = value.(string); !ok {
+			return &eval.ErrValueTypeMismatch{Field: "Unlink.FileEvent.BasenameStr"}
 		}
 		return nil
 
 	case "unlink.container_path":
 
-		if e.Unlink.ContainerPath, ok = value.(string); !ok {
-			return &eval.ErrValueTypeMismatch{Field: "Unlink.ContainerPath"}
+		if e.Unlink.FileEvent.ContainerPath, ok = value.(string); !ok {
+			return &eval.ErrValueTypeMismatch{Field: "Unlink.FileEvent.ContainerPath"}
 		}
 		return nil
 
 	case "unlink.filename":
 
-		if e.Unlink.PathnameStr, ok = value.(string); !ok {
-			return &eval.ErrValueTypeMismatch{Field: "Unlink.PathnameStr"}
+		if e.Unlink.FileEvent.PathnameStr, ok = value.(string); !ok {
+			return &eval.ErrValueTypeMismatch{Field: "Unlink.FileEvent.PathnameStr"}
 		}
 		return nil
 
@@ -4510,47 +4400,47 @@ func (e *Event) SetFieldValue(field eval.Field, value interface{}) error {
 
 		v, ok := value.(int)
 		if !ok {
-			return &eval.ErrValueTypeMismatch{Field: "Unlink.Inode"}
+			return &eval.ErrValueTypeMismatch{Field: "Unlink.FileEvent.FileFields.Inode"}
 		}
-		e.Unlink.Inode = uint64(v)
+		e.Unlink.FileEvent.FileFields.Inode = uint64(v)
 		return nil
 
 	case "unlink.overlay_numlower":
 
 		v, ok := value.(int)
 		if !ok {
-			return &eval.ErrValueTypeMismatch{Field: "Unlink.OverlayNumLower"}
+			return &eval.ErrValueTypeMismatch{Field: "Unlink.FileEvent.FileFields.OverlayNumLower"}
 		}
-		e.Unlink.OverlayNumLower = int32(v)
+		e.Unlink.FileEvent.FileFields.OverlayNumLower = int32(v)
 		return nil
 
 	case "unlink.retval":
 
 		v, ok := value.(int)
 		if !ok {
-			return &eval.ErrValueTypeMismatch{Field: "Unlink.Retval"}
+			return &eval.ErrValueTypeMismatch{Field: "Unlink.SyscallEvent.Retval"}
 		}
-		e.Unlink.Retval = int64(v)
+		e.Unlink.SyscallEvent.Retval = int64(v)
 		return nil
 
 	case "utimes.basename":
 
-		if e.Utimes.BasenameStr, ok = value.(string); !ok {
-			return &eval.ErrValueTypeMismatch{Field: "Utimes.BasenameStr"}
+		if e.Utimes.FileEvent.BasenameStr, ok = value.(string); !ok {
+			return &eval.ErrValueTypeMismatch{Field: "Utimes.FileEvent.BasenameStr"}
 		}
 		return nil
 
 	case "utimes.container_path":
 
-		if e.Utimes.ContainerPath, ok = value.(string); !ok {
-			return &eval.ErrValueTypeMismatch{Field: "Utimes.ContainerPath"}
+		if e.Utimes.FileEvent.ContainerPath, ok = value.(string); !ok {
+			return &eval.ErrValueTypeMismatch{Field: "Utimes.FileEvent.ContainerPath"}
 		}
 		return nil
 
 	case "utimes.filename":
 
-		if e.Utimes.PathnameStr, ok = value.(string); !ok {
-			return &eval.ErrValueTypeMismatch{Field: "Utimes.PathnameStr"}
+		if e.Utimes.FileEvent.PathnameStr, ok = value.(string); !ok {
+			return &eval.ErrValueTypeMismatch{Field: "Utimes.FileEvent.PathnameStr"}
 		}
 		return nil
 
@@ -4558,27 +4448,27 @@ func (e *Event) SetFieldValue(field eval.Field, value interface{}) error {
 
 		v, ok := value.(int)
 		if !ok {
-			return &eval.ErrValueTypeMismatch{Field: "Utimes.Inode"}
+			return &eval.ErrValueTypeMismatch{Field: "Utimes.FileEvent.FileFields.Inode"}
 		}
-		e.Utimes.Inode = uint64(v)
+		e.Utimes.FileEvent.FileFields.Inode = uint64(v)
 		return nil
 
 	case "utimes.overlay_numlower":
 
 		v, ok := value.(int)
 		if !ok {
-			return &eval.ErrValueTypeMismatch{Field: "Utimes.OverlayNumLower"}
+			return &eval.ErrValueTypeMismatch{Field: "Utimes.FileEvent.FileFields.OverlayNumLower"}
 		}
-		e.Utimes.OverlayNumLower = int32(v)
+		e.Utimes.FileEvent.FileFields.OverlayNumLower = int32(v)
 		return nil
 
 	case "utimes.retval":
 
 		v, ok := value.(int)
 		if !ok {
-			return &eval.ErrValueTypeMismatch{Field: "Utimes.Retval"}
+			return &eval.ErrValueTypeMismatch{Field: "Utimes.SyscallEvent.Retval"}
 		}
-		e.Utimes.Retval = int64(v)
+		e.Utimes.SyscallEvent.Retval = int64(v)
 		return nil
 
 	}
